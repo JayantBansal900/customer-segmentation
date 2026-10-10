@@ -1,0 +1,908 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "SegmentIQ Analysis API",
+    "description": "Synchronous local RFM segmentation. No database, accounts, or background jobs.",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/health": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Health",
+        "description": "Report this process's availability only.",
+        "operationId": "health_api_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/analyze": {
+      "post": {
+        "tags": [
+          "analysis"
+        ],
+        "summary": "Analyze",
+        "description": "Analyze one CSV/XLSX upload or the explicitly selected built-in example.",
+        "operationId": "analyze_api_analyze_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "properties": {
+                      "use_example": {
+                        "const": false
+                      }
+                    },
+                    "required": [
+                      "file"
+                    ]
+                  },
+                  {
+                    "not": {
+                      "required": [
+                        "file"
+                      ]
+                    },
+                    "properties": {
+                      "use_example": {
+                        "const": true
+                      }
+                    },
+                    "required": [
+                      "use_example"
+                    ]
+                  }
+                ],
+                "properties": {
+                  "selected_k": {
+                    "type": "integer",
+                    "maximum": 50.0,
+                    "minimum": 2.0,
+                    "title": "Selected K",
+                    "description": "Chosen cluster count; never replaced by recommendation."
+                  },
+                  "candidate_k_min": {
+                    "type": "integer",
+                    "maximum": 50.0,
+                    "minimum": 2.0,
+                    "title": "Candidate K Min",
+                    "description": "Inclusive candidate lower bound."
+                  },
+                  "candidate_k_max": {
+                    "type": "integer",
+                    "maximum": 50.0,
+                    "minimum": 2.0,
+                    "title": "Candidate K Max",
+                    "description": "Inclusive candidate upper bound."
+                  },
+                  "preprocessing": {
+                    "type": "string",
+                    "enum": [
+                      "raw_standard",
+                      "log1p_standard"
+                    ],
+                    "title": "Preprocessing",
+                    "description": "Maps to baseline/log1p in the existing engine.",
+                    "default": "raw_standard"
+                  },
+                  "use_example": {
+                    "type": "boolean",
+                    "title": "Use Example",
+                    "description": "Use the bundled Online Retail.xlsx instead of a file.",
+                    "default": false
+                  },
+                  "date_format": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "maxLength": 100
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "title": "Date Format",
+                    "description": "Explicit format for non-ISO uploaded dates, e.g. %d/%m/%Y."
+                  },
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "CSV or XLSX; mutually exclusive with use_example=true."
+                  }
+                },
+                "additionalProperties": false,
+                "type": "object",
+                "required": [
+                  "selected_k",
+                  "candidate_k_min",
+                  "candidate_k_max"
+                ],
+                "title": "AnalysisParameters",
+                "description": "Multipart text fields; file/example exclusivity is checked separately."
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalysisResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Request Entity Too Large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AnalysisMetadata": {
+        "properties": {
+          "api_version": {
+            "type": "string",
+            "const": "1",
+            "title": "Api Version",
+            "default": "1"
+          },
+          "request_id": {
+            "type": "string",
+            "title": "Request Id"
+          },
+          "dataset_source": {
+            "type": "string",
+            "enum": [
+              "upload",
+              "example"
+            ],
+            "title": "Dataset Source"
+          },
+          "dataset_name": {
+            "type": "string",
+            "title": "Dataset Name"
+          },
+          "input_rows": {
+            "type": "integer",
+            "title": "Input Rows"
+          },
+          "cleaned_rows": {
+            "type": "integer",
+            "title": "Cleaned Rows"
+          },
+          "customer_count": {
+            "type": "integer",
+            "title": "Customer Count"
+          },
+          "reference_timestamp": {
+            "type": "string",
+            "title": "Reference Timestamp"
+          },
+          "preprocessing": {
+            "type": "string",
+            "enum": [
+              "raw_standard",
+              "log1p_standard"
+            ],
+            "title": "Preprocessing"
+          },
+          "engine_preprocessing": {
+            "type": "string",
+            "enum": [
+              "baseline",
+              "log1p"
+            ],
+            "title": "Engine Preprocessing"
+          },
+          "selected_k": {
+            "type": "integer",
+            "title": "Selected K"
+          },
+          "recommended_k": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recommended K"
+          },
+          "total_monetary": {
+            "type": "number",
+            "title": "Total Monetary"
+          },
+          "purchase_policy": {
+            "type": "string",
+            "title": "Purchase Policy"
+          },
+          "timestamp_policy": {
+            "type": "string",
+            "title": "Timestamp Policy"
+          },
+          "package_versions": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Package Versions"
+          },
+          "pipeline_elapsed_seconds": {
+            "type": "number",
+            "title": "Pipeline Elapsed Seconds"
+          },
+          "analysis_elapsed_seconds": {
+            "type": "number",
+            "title": "Analysis Elapsed Seconds"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "request_id",
+          "dataset_source",
+          "dataset_name",
+          "input_rows",
+          "cleaned_rows",
+          "customer_count",
+          "reference_timestamp",
+          "preprocessing",
+          "engine_preprocessing",
+          "selected_k",
+          "recommended_k",
+          "total_monetary",
+          "purchase_policy",
+          "timestamp_policy",
+          "package_versions",
+          "pipeline_elapsed_seconds",
+          "analysis_elapsed_seconds"
+        ],
+        "title": "AnalysisMetadata"
+      },
+      "AnalysisResponse": {
+        "properties": {
+          "metadata": {
+            "$ref": "#/components/schemas/AnalysisMetadata"
+          },
+          "cleaning": {
+            "$ref": "#/components/schemas/CleaningSummary"
+          },
+          "model_quality": {
+            "$ref": "#/components/schemas/ModelQuality"
+          },
+          "customers": {
+            "items": {
+              "$ref": "#/components/schemas/CustomerResult"
+            },
+            "type": "array",
+            "title": "Customers"
+          },
+          "segments": {
+            "items": {
+              "$ref": "#/components/schemas/SegmentResult"
+            },
+            "type": "array",
+            "title": "Segments"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "metadata",
+          "cleaning",
+          "model_quality",
+          "customers",
+          "segments"
+        ],
+        "title": "AnalysisResponse"
+      },
+      "CandidateQuality": {
+        "properties": {
+          "k": {
+            "type": "integer",
+            "title": "K"
+          },
+          "inertia": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Inertia"
+          },
+          "silhouette": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Silhouette"
+          },
+          "silhouette_sample_size": {
+            "type": "integer",
+            "title": "Silhouette Sample Size"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "unavailable",
+              "invalid"
+            ],
+            "title": "Status"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "k",
+          "inertia",
+          "silhouette",
+          "silhouette_sample_size",
+          "status",
+          "reason"
+        ],
+        "title": "CandidateQuality"
+      },
+      "CleaningSummary": {
+        "properties": {
+          "input_rows": {
+            "type": "integer",
+            "title": "Input Rows"
+          },
+          "missing_customer_ids": {
+            "type": "integer",
+            "title": "Missing Customer Ids"
+          },
+          "cancellation_lines": {
+            "type": "integer",
+            "title": "Cancellation Lines"
+          },
+          "nonpositive_quantities": {
+            "type": "integer",
+            "title": "Nonpositive Quantities"
+          },
+          "nonpositive_prices": {
+            "type": "integer",
+            "title": "Nonpositive Prices"
+          },
+          "exact_duplicates": {
+            "type": "integer",
+            "title": "Exact Duplicates"
+          },
+          "excluded_rows": {
+            "type": "integer",
+            "title": "Excluded Rows"
+          },
+          "cleaned_rows": {
+            "type": "integer",
+            "title": "Cleaned Rows"
+          },
+          "retained_customers": {
+            "type": "integer",
+            "title": "Retained Customers"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "input_rows",
+          "missing_customer_ids",
+          "cancellation_lines",
+          "nonpositive_quantities",
+          "nonpositive_prices",
+          "exact_duplicates",
+          "excluded_rows",
+          "cleaned_rows",
+          "retained_customers"
+        ],
+        "title": "CleaningSummary"
+      },
+      "CustomerResult": {
+        "properties": {
+          "customer_id": {
+            "type": "string",
+            "title": "Customer Id"
+          },
+          "recency": {
+            "type": "integer",
+            "title": "Recency"
+          },
+          "frequency": {
+            "type": "integer",
+            "title": "Frequency"
+          },
+          "monetary": {
+            "type": "number",
+            "title": "Monetary"
+          },
+          "cluster_id": {
+            "type": "integer",
+            "title": "Cluster Id"
+          },
+          "pc1": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pc1"
+          },
+          "pc2": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pc2"
+          },
+          "persona": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Persona"
+          },
+          "persona_description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Persona Description"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "customer_id",
+          "recency",
+          "frequency",
+          "monetary",
+          "cluster_id",
+          "pc1",
+          "pc2",
+          "persona",
+          "persona_description"
+        ],
+        "title": "CustomerResult"
+      },
+      "ErrorDetail": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "stage": {
+            "type": "string",
+            "title": "Stage"
+          },
+          "issues": {
+            "items": {
+              "$ref": "#/components/schemas/ErrorIssue"
+            },
+            "type": "array",
+            "title": "Issues"
+          },
+          "context": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Context"
+          },
+          "request_id": {
+            "type": "string",
+            "title": "Request Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "code",
+          "message",
+          "stage",
+          "request_id"
+        ],
+        "title": "ErrorDetail"
+      },
+      "ErrorIssue": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "column": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Column"
+          },
+          "rows": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Rows"
+          },
+          "location": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "ErrorIssue"
+      },
+      "ErrorResponse": {
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/ErrorDetail"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "title": "ErrorResponse"
+      },
+      "HealthResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "ok",
+            "title": "Status",
+            "default": "ok"
+          },
+          "service": {
+            "type": "string",
+            "const": "segmentiq",
+            "title": "Service",
+            "default": "segmentiq"
+          },
+          "api_version": {
+            "type": "string",
+            "const": "1",
+            "title": "Api Version",
+            "default": "1"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "HealthResponse",
+        "description": "Availability only; no nonexistent infrastructure health claims."
+      },
+      "ModelQuality": {
+        "properties": {
+          "selected": {
+            "$ref": "#/components/schemas/CandidateQuality"
+          },
+          "candidates": {
+            "items": {
+              "$ref": "#/components/schemas/CandidateQuality"
+            },
+            "type": "array",
+            "title": "Candidates"
+          },
+          "recommendation_explanation": {
+            "type": "string",
+            "title": "Recommendation Explanation"
+          },
+          "silhouette_sampling": {
+            "$ref": "#/components/schemas/SilhouetteSampling"
+          },
+          "pca": {
+            "$ref": "#/components/schemas/PCAQuality"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "selected",
+          "candidates",
+          "recommendation_explanation",
+          "silhouette_sampling",
+          "pca"
+        ],
+        "title": "ModelQuality"
+      },
+      "PCAQuality": {
+        "properties": {
+          "pc1_explained_variance_ratio": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pc1 Explained Variance Ratio"
+          },
+          "pc2_explained_variance_ratio": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pc2 Explained Variance Ratio"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "pc1_explained_variance_ratio",
+          "pc2_explained_variance_ratio",
+          "reason"
+        ],
+        "title": "PCAQuality"
+      },
+      "RFMProfile": {
+        "properties": {
+          "recency": {
+            "type": "number",
+            "title": "Recency"
+          },
+          "frequency": {
+            "type": "number",
+            "title": "Frequency"
+          },
+          "monetary": {
+            "type": "number",
+            "title": "Monetary"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "recency",
+          "frequency",
+          "monetary"
+        ],
+        "title": "RFMProfile"
+      },
+      "SegmentResult": {
+        "properties": {
+          "cluster_id": {
+            "type": "integer",
+            "title": "Cluster Id"
+          },
+          "customer_count": {
+            "type": "integer",
+            "title": "Customer Count"
+          },
+          "customer_percentage": {
+            "type": "number",
+            "title": "Customer Percentage"
+          },
+          "monetary": {
+            "type": "number",
+            "title": "Monetary"
+          },
+          "monetary_contribution_percentage": {
+            "type": "number",
+            "title": "Monetary Contribution Percentage"
+          },
+          "mean_rfm": {
+            "$ref": "#/components/schemas/RFMProfile"
+          },
+          "median_rfm": {
+            "$ref": "#/components/schemas/RFMProfile"
+          },
+          "persona": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Persona"
+          },
+          "persona_description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Persona Description"
+          },
+          "recommendations": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recommendations"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "cluster_id",
+          "customer_count",
+          "customer_percentage",
+          "monetary",
+          "monetary_contribution_percentage",
+          "mean_rfm",
+          "median_rfm",
+          "persona",
+          "persona_description"
+        ],
+        "title": "SegmentResult"
+      },
+      "SilhouetteSampling": {
+        "properties": {
+          "strategy": {
+            "type": "string",
+            "title": "Strategy"
+          },
+          "seed": {
+            "type": "integer",
+            "title": "Seed"
+          },
+          "maximum_customers": {
+            "type": "integer",
+            "title": "Maximum Customers"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "strategy",
+          "seed",
+          "maximum_customers"
+        ],
+        "title": "SilhouetteSampling"
+      }
+    }
+  }
+}

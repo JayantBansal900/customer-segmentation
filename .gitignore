@@ -1,7 +1,44 @@
-@"
+# Python environments and generated caches
 venv/
+.venv/
+*-env/
 __pycache__/
-*.pyc
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+# Browser dependencies and build artifacts
+node_modules/
+dist/
+.vite/
+.vite-temp/
+coverage/
+# Local configuration; examples contain no secrets
 .env
+.env.*
+!.env.example
+# Temporary uploads and logs
+uploads/
+tmp/
+*.log
 .DS_Store
-"@ | Out-File -Encoding utf8 .gitignore
+Thumbs.db
+# The original tracked workbook remains tracked. Review its redistribution separately.
+# Private replacement datasets belong in this ignored directory.
+local-data/
+
+# Local QA evidence, generated exports and checkpoints (not source contracts)
+/backups/
+/phase*-review/
+/phase*-stage/
+*.bak
+/*.jpg
+/api_http_validation.json
+/original_baseline.json
+/phase2_final_verification.json
+/phase2b-browser-evidence.json
+/phase2b-installed-verification.json
+/validation_report.json
+/project_structure.txt
+/frontend/http-validation.json

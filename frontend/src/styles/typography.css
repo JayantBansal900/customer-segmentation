@@ -1,0 +1,114 @@
+/* Shared role-based type scale. Loaded after route styles; identity and layout stay route-owned. */
+:root {
+  --type-h1: clamp(2.25rem, 3.85vw, 3.5rem);
+  --type-display: clamp(2.375rem, 4vw, 3.625rem);
+  --type-h2: clamp(1.75rem, 2.5vw, 2.125rem);
+  --type-h3: clamp(1.375rem, 1.9vw, 1.625rem);
+  --type-h4: clamp(1.1875rem, 1.5vw, 1.3125rem);
+  --type-lead: 1.125rem;
+  --type-body: 1rem;
+  --type-secondary: .9375rem;
+  --type-label: .9375rem;
+  --type-button: .9375rem;
+  --type-nav: .9375rem;
+  --type-chart: .875rem;
+  --type-caption: .8125rem;
+  --text-readable: #e2ece7;
+  --text-secondary: #b9cfc3;
+  --text-caption: #a7c0b1;
+}
+/* The repeated shell selector intentionally outranks legacy per-page sizes. */
+.app-shell.app-shell:is(.home-shell,.analyze-shell,.product-shell) { font-size:var(--type-body); line-height:1.65; }
+.app-shell.app-shell:is(.home-shell,.analyze-shell,.product-shell) .main-content h1 { font-size:var(--type-h1); line-height:1.15; letter-spacing:-.04em; font-weight:470; }
+.app-shell.app-shell.home-shell .main-content .hero h1 { font-size:var(--type-display); line-height:1.12; }
+.app-shell.app-shell:is(.home-shell,.analyze-shell,.product-shell) .main-content h2 { font-size:var(--type-h2); line-height:1.25; letter-spacing:-.025em; }
+.app-shell.app-shell:is(.home-shell,.analyze-shell,.product-shell) .main-content h3 { font-size:var(--type-h3); line-height:1.35; letter-spacing:-.02em; }
+.app-shell.app-shell:is(.home-shell,.analyze-shell,.product-shell) .main-content h4 { font-size:var(--type-h4); line-height:1.4; letter-spacing:-.015em; }
+.app-shell.app-shell:is(.home-shell,.analyze-shell,.product-shell) .main-content p { font-size:var(--type-body); line-height:1.7; }
+.app-shell.app-shell:is(.home-shell,.analyze-shell,.product-shell) .main-content :is(.help,.muted,.technical-note,.step-introduction,.upload-guidance,.upload-file-status,.hero-note,.feature-note,.copy-details,.copy-details p,.copy-details li) { font-size:var(--type-secondary)!important; line-height:1.7; color:var(--text-secondary); }
+.app-shell.app-shell:is(.home-shell,.analyze-shell,.product-shell) .main-content :is(.hero-description,.analyze-introduction,.product-heading>p:not(.section-kicker)) { font-size:var(--type-lead); line-height:1.7; color:var(--text-secondary); }
+.app-shell.app-shell:is(.home-shell,.analyze-shell,.product-shell) :is(.eyebrow,.section-kicker,.analyze-kicker,.prototype-badge,.header-project-note,.workspace-status,.footer-context,.service-status,.site-footer p,.site-footer p span) { font-size:var(--type-caption); line-height:1.65; color:var(--text-caption); letter-spacing:.035em; }
+.app-shell.app-shell:is(.home-shell,.analyze-shell,.product-shell) .site-header nav a { font-size:var(--type-nav); line-height:1.4; color:var(--text-secondary); }
+.app-shell.app-shell:is(.home-shell,.analyze-shell,.product-shell) .site-header nav a.active { color:var(--text-readable); }
+.app-shell.app-shell:is(.home-shell,.analyze-shell,.product-shell) :is(button,.button,.primary,.secondary,.navigation-toggle,.text-link) { font-size:var(--type-button); line-height:1.5; }
+.app-shell.app-shell:is(.home-shell,.analyze-shell,.product-shell) .main-content :is(.field,input,select) { font-size:var(--type-label); line-height:1.5; }
+.app-shell.app-shell:is(.home-shell,.analyze-shell,.product-shell) .main-content input:not([type=radio]) { color:#e0ece6; background:#0b181b; }
+.app-shell.app-shell:is(.home-shell,.analyze-shell,.product-shell) .main-content :is(table,.bar-label,.legend,.legend button,.point-tooltip,.pagination,.formula,.schema-strip code,.column-checklist,.representation-options code,.foundations,.capability-list li,.model-context,.cluster-badge) { font-size:var(--type-chart); line-height:1.65; }
+.app-shell.app-shell:is(.home-shell,.analyze-shell,.product-shell) .main-content :is(small,dt,caption,.quiet-tag,.process-number,.workflow-index,.step,.selected-tag,.example-status,.analysis-method-note>span,.analysis-method-note small,.concept-label,.capability-list li::before) { font-size:var(--type-caption); line-height:1.65; color:var(--text-caption); }
+.app-shell.app-shell:is(.home-shell,.analyze-shell,.product-shell) .main-content :is(.source-option strong,.example-dataset strong,.file-details dd) { font-size:var(--type-label); }
+.app-shell.app-shell:is(.home-shell,.analyze-shell,.product-shell) .main-content :is(.source-option small,.example-dataset p,.upload-copy p,.input-inspection p,.analysis-method-note p,.process-track p,.analytics article p,.capability-list li,.conceptual-rfm p) { font-size:var(--type-secondary); color:var(--text-secondary); line-height:1.7; }
+.app-shell.app-shell.home-shell .feature-row p { font-size:var(--type-secondary)!important; color:var(--text-secondary); }
+.app-shell.app-shell:is(.home-shell,.analyze-shell,.product-shell) .main-content figcaption { font-size:var(--type-h4); line-height:1.4; }
+.app-shell.app-shell:is(.home-shell,.analyze-shell,.product-shell) .main-content .metric dd { font-size:var(--type-h3); line-height:1.4; }
+.app-shell.app-shell:is(.home-shell,.analyze-shell,.product-shell) .main-content .error-box { font-size:var(--type-body); }
+.app-shell.app-shell:is(.home-shell,.analyze-shell,.product-shell) .main-content .upload-error { font-size:var(--type-secondary); }
+.app-shell.app-shell:is(.home-shell,.analyze-shell,.product-shell) summary { color:var(--text-secondary); padding-block:4px; }
+.app-shell.app-shell:is(.home-shell,.analyze-shell,.product-shell) :is(a,button,input,select,summary):focus-visible { outline:2px solid #b8e3d5; outline-offset:4px; }
+.app-shell.app-shell.home-shell .hero-copy { width:560px; }
+.app-shell.app-shell.home-shell .hero h1 { max-width:490px; }
+.app-shell.app-shell.home-shell .hero-description { max-width:390px; }
+.app-shell.app-shell.home-shell .hero-actions { gap:18px; }
+.app-shell.app-shell.home-shell .hero-note { flex-wrap:wrap; }
+.app-shell.app-shell.home-shell .hero-bottom { align-items:flex-end; }
+.app-shell.app-shell.home-shell .hero-bottom p { max-width:420px; font-size:var(--type-caption); }
+.app-shell.app-shell.home-shell .hero-bottom p span { color:var(--text-caption); }
+.app-shell.app-shell.home-shell .scene-controls button { font-size:var(--type-caption); color:var(--text-secondary); }
+.app-shell.app-shell.home-shell .cluster-label { max-width:240px; padding:12px 14px; }
+.app-shell.app-shell.home-shell .cluster-label strong { font-size:var(--type-label); letter-spacing:-.015em; line-height:1.4; }
+.app-shell.app-shell.home-shell .cluster-label small { font-size:var(--type-caption); line-height:1.5; color:var(--text-secondary); }
+.app-shell.app-shell.home-shell .process-track { gap:25px; }
+.app-shell.app-shell.home-shell .analytics-composition { grid-template-columns:1.1fr 1fr; }
+.app-shell.app-shell.home-shell .feature-row h3 { font-size:var(--type-h3); }
+.app-shell.app-shell.home-shell .feature-row article { min-height:100px; }
+.app-shell.app-shell.home-shell .site-footer { flex-wrap:wrap; }
+.app-shell.app-shell.home-shell .source-label { font-size:var(--type-caption); color:var(--text-caption); }
+.app-shell.app-shell.product-shell .candidate-curve text { font-size:14px; }
+.app-shell.app-shell:is(.analyze-shell,.product-shell) .section-top { flex-wrap:wrap; }
+.app-shell.app-shell:is(.analyze-shell,.product-shell) .table-scroll { max-width:100%; }
+.app-shell.app-shell:is(.analyze-shell,.product-shell) .main-content :is(.formula,.copy-details code) { overflow-wrap:anywhere; }
+.app-shell.app-shell.home-shell { --teal:#4fe0c6; --coral:#fa8a66; --gold:#f1c66f; --blue:#88b7ff; }
+@media(max-width:1100px) {
+  .app-shell.app-shell:is(.home-shell,.analyze-shell,.product-shell) .header-project-note { display:none; }
+  .app-shell.app-shell:is(.home-shell,.analyze-shell,.product-shell) .site-header { gap:18px; }
+  .app-shell.app-shell:is(.home-shell,.analyze-shell,.product-shell) .site-header nav a { padding-inline:10px; }
+  .app-shell.app-shell.home-shell .hero-copy { width:495px; }
+  .app-shell.app-shell.home-shell .hero-actions { gap:12px; }
+}
+@media(max-width:760px) {
+  :root { --type-lead:1rem; --type-body:.9375rem; --type-secondary:.875rem; --type-label:.9375rem; --type-caption:.8125rem; }
+  .app-shell.app-shell.home-shell .hero-copy { width:100%; }
+  .app-shell.app-shell.home-shell .hero-note { max-width:330px; }
+  .app-shell.app-shell.home-shell .cluster-label { max-width:46%; padding:10px; }
+  .app-shell.app-shell.home-shell .cluster-label strong { font-size:.875rem; }
+  .app-shell.app-shell.home-shell .cluster-label small { font-size:.8125rem; }
+  .app-shell.app-shell.home-shell .hero-bottom { gap:14px; flex-wrap:wrap; }
+  .app-shell.app-shell.home-shell .hero-bottom p { max-width:100%; }
+  .app-shell.app-shell.home-shell .source-label { display:none; }
+  .app-shell.app-shell.home-shell .hero { min-height:1160px; }
+  .app-shell.app-shell.home-shell .scene { top:480px; bottom:160px; }
+  .app-shell.app-shell.home-shell .hero-actions { gap:14px; }
+  .app-shell.app-shell.home-shell .analytics-composition { grid-template-columns:1fr; }
+  .app-shell.app-shell.product-shell .process-map li { grid-template-columns:32px minmax(0,1fr); }
+  .app-shell.app-shell:is(.analyze-shell,.product-shell) .closing-cta .actions { width:100%; }
+  .app-shell.app-shell .pagination .button { font-size:var(--type-caption); }
+}
+@media(prefers-reduced-motion:reduce) { .app-shell summary { scroll-behavior:auto; } }
+
+/* Keep meaningful labels above the lower cinematic fade. */
+.app-shell.app-shell.home-shell .hero::after { background:linear-gradient(0deg,#08110f 0%,transparent 10%,transparent 90%,#08110f44); }
+.app-shell.app-shell:is(.home-shell,.analyze-shell,.product-shell) .main-content :is(.validation-list,.error-box li,.notice) { font-size:var(--type-secondary); line-height:1.7; }
+.app-shell.app-shell.analyze-shell .analysis-step legend { font-size:var(--type-h2); line-height:1.25; }
+.app-shell.app-shell:is(.home-shell,.analyze-shell,.product-shell) .main-content :is(.section-heading>p:last-child,.configuration-note p) { color:var(--text-secondary); }
+.app-shell.app-shell:is(.home-shell,.analyze-shell,.product-shell) .main-content input::placeholder { color:var(--text-caption); opacity:1; }
+.app-shell.app-shell.product-shell .candidate-curve { overflow-x:auto; }
+.app-shell.app-shell.product-shell .candidate-curve svg { min-width:420px; }
+
+/* Readable text needs enough room at the existing narrow-screen breakpoints. */
+.app-shell.app-shell:is(.home-shell,.analyze-shell,.product-shell) .main-content p { font-weight:400; }
+.app-shell.app-shell.product-shell .customer-explorer table { min-width:1000px; }
+.app-shell.app-shell.product-shell .customer-explorer :is(th,td):last-child { min-width:260px; }
+@media(max-width:640px) {
+  .app-shell.app-shell.analyze-shell .example-dataset { display:grid; grid-template-columns:30px minmax(0,1fr); align-items:start; }
+  .app-shell.app-shell.analyze-shell .example-status { grid-column:2; justify-self:start; margin-left:0; }
+  .app-shell.app-shell.analyze-shell .analysis-result .metric:last-child { grid-column:1/-1; }
+}

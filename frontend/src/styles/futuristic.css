@@ -1,0 +1,482 @@
+/* Approved Futuristic Intelligence composition. Every visual rule is scoped to Home. */
+.app-shell.home-shell { font-family:"Segoe UI",system-ui,sans-serif;color:#e9eeeb;background:#08110f;font-synthesis:none;line-height:1.6;--teal:#92d8c6;--coral:#e6a08c;--gold:#decfa2;--blue:#9eb9db }
+.app-shell.home-shell * { box-sizing:border-box }
+.app-shell.home-shell { margin:0 }
+.app-shell.home-shell a { color:inherit;text-decoration:none }
+.app-shell.home-shell button { font:inherit;cursor:pointer }
+.app-shell.home-shell button:disabled { cursor:default;opacity:.5 }
+.app-shell.home-shell button, .app-shell.home-shell a { -webkit-tap-highlight-color:transparent }
+.app-shell.home-shell a:focus-visible, .app-shell.home-shell button:focus-visible { outline:2px solid #b8e3d5;outline-offset:5px }
+.app-shell.home-shell h1, .app-shell.home-shell h2, .app-shell.home-shell h3, .app-shell.home-shell p { margin:0 }
+.app-shell.home-shell h1, .app-shell.home-shell h2, .app-shell.home-shell h3 { font-weight:450;letter-spacing:-.035em;line-height:1.1 }
+.app-shell.home-shell .site-header { width:min(1440px,100%);margin:auto;display:flex;align-items:center;justify-content:space-between;padding:26px 60px;gap:35px;position:relative;z-index:5;border-bottom:1px solid #a9c2b70c }
+.app-shell.home-shell .brand { display:flex;gap:10px;align-items:center;font-size:24px;font-weight:650;letter-spacing:-1px;white-space:nowrap }
+.app-shell.home-shell .brand svg { width:29px;height:29px }
+.app-shell.home-shell .iq { font-weight:400 }
+.app-shell.home-shell .site-header nav { display:flex;gap:33px;align-items:center;font-size:12px;color:#8fa399 }
+.app-shell.home-shell .site-header nav a { min-height:44px;display:flex;align-items:center;position:relative }
+.app-shell.home-shell .site-header nav a:hover { color:#dcebe2 }
+.app-shell.home-shell .site-header nav .active { color:#e5eee8 }
+.app-shell.home-shell .site-header nav .active::after { content:"";position:absolute;width:15px;height:1px;background:#acd5c1;bottom:4px;left:calc(50% - 7px) }
+.app-shell.home-shell .prototype-badge { font-size:10px;color:#8eaaa0;display:flex;align-items:center;gap:7px }
+.app-shell.home-shell .prototype-badge i { width:5px;height:5px;border-radius:50%;background:#8ea794 }
+.app-shell.home-shell .menu-button { display:none }
+.app-shell.home-shell .main-content { width:min(1440px,100%);margin:auto }
+.app-shell.home-shell .hero { min-height:760px;position:relative;isolation:isolate;overflow:hidden;background:radial-gradient(ellipse at 64% 43%,#193e3524,transparent 55%),linear-gradient(120deg,#0a1512,#07130f 70%,#0a1a16);border-bottom:1px solid #d1e5d41a }
+.app-shell.home-shell .hero::before { content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(90deg,#0a1512 0%,#0a1512dd 13%,#0a151288 32%,transparent 52%) }
+.app-shell.home-shell .hero::after { content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(0deg,#08110f 0%,transparent 21%,transparent 90%,#08110f44);z-index:1 }
+.app-shell.home-shell .hero-copy { position:relative;z-index:3;padding:102px 0 175px 60px;width:550px;pointer-events:none }
+.app-shell.home-shell .hero-copy a { pointer-events:auto }
+.app-shell.home-shell .eyebrow { font-size:10px;letter-spacing:.065em;color:#a2bdb0;margin-bottom:25px;display:flex;align-items:center;gap:9px;font-weight:500 }
+.app-shell.home-shell .hero-copy .eyebrow>span { height:5px;width:5px;background:#9dcdb9;border-radius:50%;box-shadow:0 0 15px #8bcab9 }
+.app-shell.home-shell .hero h1 { font-size:57px;letter-spacing:-.045em;line-height:1.09;max-width:480px;text-wrap:balance }
+.app-shell.home-shell .hero h1 em { font-style:normal;color:#a5d2c0 }
+.app-shell.home-shell .hero-description { font-size:14px;color:#99ada2;max-width:355px;margin-top:25px;line-height:1.8 }
+.app-shell.home-shell .hero-actions { display:flex;flex-wrap:wrap;align-items:center;gap:24px;margin-top:32px }
+.app-shell.home-shell .primary { display:inline-flex;align-items:center;justify-content:space-between;gap:30px;font-size:12px;font-weight:650;min-height:50px;padding:14px 23px;border-radius:13px;color:#10211a;background:linear-gradient(130deg,#b3d8c4,#8fbea8);box-shadow:0 0 25px #87c9a913,inset 0 1px 0 #eefaf466;transition:transform .2s,box-shadow .2s }
+.app-shell.home-shell .primary span { font-size:19px;line-height:1 }
+.app-shell.home-shell .primary:hover { transform:translateY(-2px);box-shadow:0 4px 30px #9acbb833 }
+.app-shell.home-shell .secondary { font-size:11px;color:#b2c3b8;display:flex;align-items:center;gap:16px;min-height:44px }
+.app-shell.home-shell .secondary:hover { color:#e5efea }
+.app-shell.home-shell .hero-note { display:flex;align-items:center;gap:10px;font-size:8px;color:#769085;letter-spacing:.02em;margin-top:34px }
+.app-shell.home-shell .note-line { width:25px;height:1px;background:#65897866 }
+.app-shell.home-shell .scene { position:absolute;inset:0;z-index:0 }
+.app-shell.home-shell .scene canvas, .app-shell.home-shell .flow-layer, .app-shell.home-shell .fallback { width:100%;height:100%;position:absolute;inset:0 }
+.app-shell.home-shell .scene canvas { z-index:2 }
+.app-shell.home-shell .flow-layer { z-index:1 }
+.app-shell.home-shell .fallback { z-index:2 }
+.app-shell.home-shell .fallback[hidden] { display:none }
+.app-shell.home-shell .ambient { position:absolute;pointer-events:none;filter:blur(75px);opacity:.18;width:500px;height:200px;border-radius:50%;background:#6ebc9b;transform:rotate(-30deg) }
+.app-shell.home-shell .ambient-one { right:6%;top:-160px }
+.app-shell.home-shell .ambient-two { bottom:-140px;right:18%;opacity:.12 }
+.app-shell.home-shell .cluster-light { position:absolute;width:210px;height:210px;border-radius:50%;transform:translate(-50%,-50%);filter:blur(30px);opacity:.28;z-index:0;pointer-events:none }
+.app-shell.home-shell .light-teal { left:61%;top:33%;background:radial-gradient(#66d2b8,transparent 68%) }
+.app-shell.home-shell .light-coral { left:83%;top:25%;background:radial-gradient(#e88e7f,transparent 68%) }
+.app-shell.home-shell .light-gold { left:85%;top:64%;background:radial-gradient(#e4c785,transparent 68%) }
+.app-shell.home-shell .light-blue { left:62%;top:75%;background:radial-gradient(#89acd9,transparent 68%) }
+.app-shell.home-shell .data-ghost { position:absolute;border:1px solid #a3c1b118;border-radius:14px;width:185px;padding:17px 22px;color:#7f9d92;font-size:9px;opacity:.24;filter:blur(2px);transform:perspective(500px) rotateY(-15deg);pointer-events:none }
+.app-shell.home-shell .data-ghost i { display:block;height:3px;background:#97bcab4d;margin:11px 0;width:80% }
+.app-shell.home-shell .data-ghost i:nth-child(2n) { width:52% }
+.app-shell.home-shell .ghost-one { left:43%;top:8% }
+.app-shell.home-shell .ghost-two { right:3%;top:40%;width:150px }
+.app-shell.home-shell .cluster-labels { position:absolute;inset:0;z-index:4;pointer-events:none }
+.app-shell.home-shell .cluster-label { position:absolute;display:flex;align-items:center;gap:10px;color:#d8e9e0;background:linear-gradient(120deg,#173c3099,#132c2566);border:1px solid #c1e5d52b;border-radius:13px;padding:10px 13px;min-height:49px;backdrop-filter:blur(10px);text-align:left;pointer-events:auto;box-shadow:0 6px 25px #0002, inset 0 1px 0 #ffffff06;transition:border-color .25s,background .25s,transform .25s }
+.app-shell.home-shell .cluster-label:hover, .app-shell.home-shell .cluster-label[aria-pressed=true] { border-color:#b8ded080;background:#1f4437cc;transform:translateY(-2px) }
+.app-shell.home-shell .cluster-label i { width:5px;height:5px;border-radius:50%;background:var(--teal);box-shadow:0 0 8px currentColor;color:var(--teal) }
+.app-shell.home-shell .cluster-label strong { display:block;font-size:12px;font-weight:550;line-height:1.3;letter-spacing:.01em }
+.app-shell.home-shell .cluster-label small { display:block;font-size:9px;color:#9eb8ac;margin-top:4px }
+.app-shell.home-shell .cluster-label b { font-weight:400;font-size:11px;color:#94b4a2;margin-left:4px }
+.app-shell.home-shell .label-teal { left:52%;top:14% }
+.app-shell.home-shell .label-coral { right:3%;top:8% }
+.app-shell.home-shell .label-coral i { background:var(--coral);color:var(--coral) }
+.app-shell.home-shell .label-gold { right:3%;top:78% }
+.app-shell.home-shell .label-gold i { background:var(--gold);color:var(--gold) }
+.app-shell.home-shell .label-blue { left:48%;top:85% }
+.app-shell.home-shell .label-blue i { background:var(--blue);color:var(--blue) }
+.app-shell.home-shell .source-label { position:absolute;left:35%;top:82%;font-size:8px;color:#81988c;display:flex;align-items:center;gap:8px;z-index:3 }
+.app-shell.home-shell .source-label span { width:18px;height:1px;background:#8ba090 }
+.app-shell.home-shell .hero-bottom { position:absolute;z-index:4;left:60px;right:60px;bottom:25px;display:flex;justify-content:space-between;align-items:center;gap:20px }
+.app-shell.home-shell .hero-bottom p { font-size:9px;color:#95ad9e;display:flex;align-items:center;gap:6px }
+.app-shell.home-shell .hero-bottom p>i { height:4px;width:4px;background:#93bdac;border-radius:50% }
+.app-shell.home-shell .hero-bottom p span { color:#607e6b }
+.app-shell.home-shell .scene-controls { display:flex;gap:5px }
+.app-shell.home-shell .scene-controls button { min-height:44px;font-size:9px;color:#94ae9d;background:#12291d66;border:1px solid #acccb719;border-radius:11px;padding:10px 13px }
+.app-shell.home-shell .scene-controls button:hover { border-color:#acccb74d }
+.app-shell.home-shell .section-heading .eyebrow { color:#779d86;margin-bottom:20px }
+.app-shell.home-shell .section-heading h2 { font-size:34px;line-height:1.15;color:#dce8df }
+.app-shell.home-shell .section-heading>p:last-child { font-size:12px;color:#789080;margin-top:20px;max-width:270px }
+.app-shell.home-shell .process { display:grid;grid-template-columns:1fr 2fr;padding:75px 60px 85px;gap:65px;border-bottom:1px solid #a8c1ad16;background:radial-gradient(ellipse at 60% 50%,#16332233,transparent 65%) }
+.app-shell.home-shell .process-track { display:grid;grid-template-columns:repeat(3,1fr);gap:40px;margin:0;padding:0;list-style:none;position:relative }
+.app-shell.home-shell .process-track::before { content:"";position:absolute;height:1px;left:15px;right:15px;top:8px;background:linear-gradient(90deg,#7a9c8533,#7a9c8566,#7a9c8522) }
+.app-shell.home-shell .step { position:relative;z-index:1;font-size:9px;padding-right:14px;background:#0c1812;color:#8eaa94 }
+.app-shell.home-shell .process-track h3 { font-size:15px;margin:22px 0 12px;font-weight:500 }
+.app-shell.home-shell .process-track p { font-size:10px;color:#799182;line-height:1.8 }
+.app-shell.home-shell .file-object { height:77px;width:64px;border:1px solid #7fa68e88;border-radius:8px;padding:15px 12px;background:linear-gradient(140deg,#3e654c70,#16352044);margin-top:25px;transform:perspective(250px) rotateY(-18deg) rotate(-8deg);box-shadow:9px 4px 0 #17392344,9px 4px 0 1px #6a96784d }
+.app-shell.home-shell .file-object i { display:block;height:2px;background:#96b89c77;margin:6px 0 }
+.app-shell.home-shell .file-object i:nth-child(2) { width:60% }
+.app-shell.home-shell .file-object b { font-size:7px;color:#adc3af;font-weight:400 }
+.app-shell.home-shell .cluster-object { height:77px;width:100px;position:relative;margin-top:25px }
+.app-shell.home-shell .cluster-object i, .app-shell.home-shell .kmeans-visual i { position:absolute;width:3px;height:3px;border-radius:50%;box-shadow:0 0 5px #9fc3af44 }
+.app-shell.home-shell .insight-object { height:77px;display:flex;align-items:end;gap:7px;width:90px;margin-top:25px;border-bottom:1px solid #61846c77;padding:0 5px }
+.app-shell.home-shell .insight-object i { width:13px;height:51px;border-radius:4px 4px 0 0;background:linear-gradient(90deg,#678b6f,#b1c4a1);box-shadow:4px 0 0 #53684666;transform:skewY(-14deg) }
+.app-shell.home-shell .insight-object i:nth-child(2) { height:27px;background:linear-gradient(90deg,#897764,#b9a283) }
+.app-shell.home-shell .insight-object i:nth-child(3) { height:42px;background:linear-gradient(90deg,#637781,#9fbbc1) }
+.app-shell.home-shell .insight-object i:nth-child(4) { height:19px }
+.app-shell.home-shell .analytics { padding:80px 60px;display:grid;grid-template-columns:1fr 2fr;gap:65px;background:radial-gradient(ellipse at 65% 70%,#1e342229,transparent 55%) }
+.app-shell.home-shell .analytics-composition { display:grid;grid-template-columns:1.1fr 1fr;gap:14px }
+.app-shell.home-shell .analytics-composition>article { border:1px solid #bbd3bb24;border-radius:20px;background:linear-gradient(130deg,#1e332566,#101d1666);padding:25px }
+.app-shell.home-shell .feature-note { font-size:8px;color:#8ba692;display:block;margin-bottom:16px;letter-spacing:.025em }
+.app-shell.home-shell .analytics h3 { font-size:21px;margin-bottom:12px;font-weight:500 }
+.app-shell.home-shell .analytics article p { font-size:10px;color:#91a694;line-height:1.8 }
+.app-shell.home-shell .rfm-visual { display:flex;flex-direction:column;gap:10px;margin-top:25px;max-width:230px }
+.app-shell.home-shell .rfm-visual span { display:flex;align-items:center;gap:13px;color:#799784;font-size:9px }
+.app-shell.home-shell .rfm-visual i { width:85%;height:4px;background:linear-gradient(90deg,#7db49b,#c2ddc2);border-radius:4px;box-shadow:0 0 8px #a2d9b71a }
+.app-shell.home-shell .rfm-visual span:nth-child(2) i { width:55%;background:linear-gradient(90deg,#6b9398,#abcfce) }
+.app-shell.home-shell .rfm-visual span:nth-child(3) i { width:72%;background:linear-gradient(90deg,#9b7760,#c8ac86) }
+.app-shell.home-shell .kmeans-visual { height:70px;position:relative;max-width:240px;margin-top:20px }
+.app-shell.home-shell .feature-row { grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid #a4c4ad26;margin-top:17px;padding-top:25px;gap:20px }
+.app-shell.home-shell .feature-row article { padding-right:8px }
+.app-shell.home-shell .feature-symbol { color:#93b89b;font-size:24px;display:block;line-height:1;margin-bottom:15px }
+.app-shell.home-shell .feature-row h3 { font-size:13px;letter-spacing:-.02em;margin-bottom:8px }
+.app-shell.home-shell .feature-row p { font-size:9px!important }
+.app-shell.home-shell .closing { position:relative;text-align:center;padding:72px 25px 82px;margin:0 30px;border:1px solid #9fbea322;border-radius:28px;overflow:hidden;background:radial-gradient(ellipse at 50% 120%,#244b3277,transparent 65%),linear-gradient(110deg,#0e2017,#0c1913) }
+.app-shell.home-shell .closing .eyebrow { justify-content:center;font-size:9px;color:#9dbaa4;position:relative;z-index:1 }
+.app-shell.home-shell .closing h2 { font-size:38px;line-height:1.2;position:relative;z-index:1;max-width:750px;margin:auto }
+.app-shell.home-shell .closing .primary { margin-top:28px;position:relative;z-index:1 }
+.app-shell.home-shell .closing-orbit { position:absolute;width:850px;height:230px;border:1px solid #9fc8a715;border-radius:50%;left:calc(50% - 425px);top:100px;transform:rotate(-12deg) }
+.app-shell.home-shell .closing-orbit::before, .app-shell.home-shell .closing-orbit::after { content:"";position:absolute;inset:-28px;border:1px solid #9fc8a711;border-radius:50% }
+.app-shell.home-shell .closing-orbit::after { inset:28px }
+.app-shell.home-shell .site-footer { max-width:1440px;margin:auto;padding:38px 60px;display:flex;align-items:center;justify-content:space-between;gap:20px }
+.app-shell.home-shell .site-footer .brand { font-size:18px;gap:0 }
+.app-shell.home-shell .site-footer p { font-size:10px;color:#7a9784 }
+.app-shell.home-shell .site-footer>span { font-size:8px;color:#668270 }
+.app-shell.home-shell .sr-only { position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0 }
+.app-shell.home-shell .skip-link { position:fixed;top:-80px;left:20px;z-index:20;padding:12px;background:#c2decb;color:#102016;border-radius:10px }
+.app-shell.home-shell .skip-link:focus { top:15px }
+@media(max-width:1100px) {
+.app-shell.home-shell .site-header { padding:22px 35px }
+.app-shell.home-shell .hero-copy { padding-left:35px;width:480px }
+.app-shell.home-shell .hero h1 { font-size:49px }
+.app-shell.home-shell .hero-description { max-width:320px }
+.app-shell.home-shell .hero-actions { gap:18px }
+.app-shell.home-shell .hero-bottom { left:35px;right:35px }
+.app-shell.home-shell .prototype-badge { display:none }
+.app-shell.home-shell .hero { min-height:730px }
+.app-shell.home-shell .label-teal { left:51%;top:15% }
+.app-shell.home-shell .label-coral { right:2%;top:7% }
+.app-shell.home-shell .label-blue { left:48%;top:83% }
+.app-shell.home-shell .cluster-label { padding:9px 10px;gap:7px }
+.app-shell.home-shell .cluster-label strong { font-size:11px }
+.app-shell.home-shell .cluster-label small { font-size:8px }
+.app-shell.home-shell .process, .app-shell.home-shell .analytics { padding:60px 35px;gap:35px;grid-template-columns:.9fr 2fr }
+.app-shell.home-shell .process-track { gap:25px }
+.app-shell.home-shell .section-heading h2 { font-size:29px }
+.app-shell.home-shell .analytics-composition>article { padding:21px }
+.app-shell.home-shell .feature-row { gap:14px }
+.app-shell.home-shell .site-footer { padding:32px 35px }
+}
+@media(max-width:760px) {
+.app-shell.home-shell .site-header nav { gap:20px }
+.app-shell.home-shell .site-header { padding:20px 25px }
+.app-shell.home-shell .hero { min-height:1040px }
+.app-shell.home-shell .hero-copy { padding:60px 30px 0;width:100%;max-width:570px }
+.app-shell.home-shell .hero h1 { font-size:48px }
+.app-shell.home-shell .hero-description { max-width:400px }
+.app-shell.home-shell .scene { top:410px;bottom:60px }
+.app-shell.home-shell .hero::before { background:linear-gradient(180deg,#0a1512 0%,#0a151200 60%) }
+.app-shell.home-shell .hero-note { display:none }
+.app-shell.home-shell .data-ghost { display:none }
+.app-shell.home-shell .hero-bottom { left:30px;right:30px;bottom:18px }
+.app-shell.home-shell .hero-bottom p span { display:none }
+.app-shell.home-shell .hero-bottom p { font-size:8px }
+.app-shell.home-shell .scene-controls button { font-size:8px }
+.app-shell.home-shell .label-teal { left:12%;top:4% }
+.app-shell.home-shell .label-coral { right:6%;top:16% }
+.app-shell.home-shell .label-gold { right:4%;top:76% }
+.app-shell.home-shell .label-blue { left:8%;top:78% }
+.app-shell.home-shell .cluster-label strong { font-size:10px }
+.app-shell.home-shell .cluster-label small { font-size:8px }
+.app-shell.home-shell .source-label { display:none }
+.app-shell.home-shell .light-teal { left:31%;top:27%;width:160px }
+.app-shell.home-shell .light-coral { left:75%;top:37%;width:160px }
+.app-shell.home-shell .light-gold { left:75%;top:70%;width:160px }
+.app-shell.home-shell .light-blue { left:30%;top:73%;width:160px }
+.app-shell.home-shell .process, .app-shell.home-shell .analytics { grid-template-columns:1fr;gap:36px;padding:55px 30px }
+.app-shell.home-shell .section-heading h2 { font-size:33px }
+.app-shell.home-shell .section-heading>p:last-child { max-width:none;margin-top:15px }
+.app-shell.home-shell .process-track { gap:20px }
+.app-shell.home-shell .analytics-composition>article { padding:23px }
+.app-shell.home-shell .closing h2 { font-size:31px }
+.app-shell.home-shell .closing { margin:0 20px;padding:60px 20px }
+.app-shell.home-shell .site-footer { flex-wrap:wrap;padding:30px }
+.app-shell.home-shell .site-footer>span { width:100% }
+}
+@media(max-width:480px) {
+.app-shell.home-shell .site-header { padding:19px 22px;flex-wrap:wrap;gap:15px }
+.app-shell.home-shell .brand { font-size:23px }
+.app-shell.home-shell .menu-button { display:flex;align-items:center;gap:18px;margin-left:auto;border:1px solid #aacbb52b;color:#b7cec0;background:#16302266;padding:8px 13px;border-radius:12px;min-height:44px;font-size:11px }
+.app-shell.home-shell .menu-button span { font-size:18px }
+.app-shell.home-shell .site-header nav { display:none;width:100%;grid-template-columns:1fr 1fr;gap:4px;padding:8px;border:1px solid #aacbb522;border-radius:15px;background:#102319 }
+.app-shell.home-shell .site-header nav.navigation-open { display:grid }
+.app-shell.home-shell .site-header nav a { justify-content:center;font-size:11px;border-radius:10px }
+.app-shell.home-shell .site-header nav .active { background:#263b2b }
+.app-shell.home-shell .site-header nav .active::after { display:none }
+.app-shell.home-shell .hero { min-height:965px }
+.app-shell.home-shell .hero-copy { padding:37px 25px 0;max-width:none }
+.app-shell.home-shell .hero h1 { font-size:40px;max-width:345px }
+.app-shell.home-shell .eyebrow { font-size:9px;margin-bottom:20px }
+.app-shell.home-shell .hero-description { font-size:12px;margin-top:20px;max-width:325px;line-height:1.8 }
+.app-shell.home-shell .hero-actions { margin-top:25px;gap:18px }
+.app-shell.home-shell .primary { font-size:11px;padding:12px 17px;gap:22px;min-height:48px }
+.app-shell.home-shell .secondary { font-size:9px;gap:10px }
+.app-shell.home-shell .scene { top:385px;bottom:95px }
+.app-shell.home-shell .cluster-label { padding:9px 10px;min-height:49px;gap:6px;border-radius:11px }
+.app-shell.home-shell .cluster-label strong { font-size:11px }
+.app-shell.home-shell .cluster-label small { font-size:8px;max-width:125px }
+.app-shell.home-shell .cluster-label b { display:none }
+.app-shell.home-shell .label-teal { left:8%;top:2% }
+.app-shell.home-shell .label-coral { right:4%;top:29% }
+.app-shell.home-shell .label-gold { right:4%;top:79% }
+.app-shell.home-shell .label-blue { left:5%;top:81% }
+.app-shell.home-shell .hero-bottom { left:25px;right:25px;flex-direction:column;align-items:start;gap:10px;bottom:18px }
+.app-shell.home-shell .hero-bottom p { font-size:8px }
+.app-shell.home-shell .scene-controls button { min-height:44px;padding:9px 12px;font-size:9px }
+.app-shell.home-shell .light-teal, .app-shell.home-shell .light-coral, .app-shell.home-shell .light-gold, .app-shell.home-shell .light-blue { width:140px;height:140px;filter:blur(20px) }
+.app-shell.home-shell .process, .app-shell.home-shell .analytics { padding:48px 25px;gap:30px }
+.app-shell.home-shell .section-heading h2 { font-size:31px }
+.app-shell.home-shell .section-heading>p:last-child { font-size:11px }
+.app-shell.home-shell .process-track { grid-template-columns:1fr;gap:28px }
+.app-shell.home-shell .process-track::before { width:1px;height:calc(100% - 40px);top:18px;left:6px;background:linear-gradient(#7a9c8577,#7a9c8522) }
+.app-shell.home-shell .process-track li { padding-left:32px;position:relative;min-height:96px;padding-right:70px }
+.app-shell.home-shell .step { position:absolute;left:0;top:0;padding:0 0 9px;background:#0c1812 }
+.app-shell.home-shell .process-track h3 { margin-top:0;font-size:15px;margin-bottom:10px }
+.app-shell.home-shell .process-track p { font-size:10px }
+.app-shell.home-shell .file-object, .app-shell.home-shell .cluster-object, .app-shell.home-shell .insight-object { position:absolute;right:0;top:0;margin:0;transform:scale(.75);transform-origin:top right }
+.app-shell.home-shell .file-object { transform:scale(.75) rotate(-8deg) }
+.app-shell.home-shell .cluster-object { width:80px }
+.app-shell.home-shell .insight-object { width:80px }
+.app-shell.home-shell .analytics-composition { grid-template-columns:1fr;gap:12px }
+.app-shell.home-shell .analytics h3 { font-size:21px }
+.app-shell.home-shell .feature-row { grid-column:auto;grid-template-columns:1fr;padding-top:10px;gap:0;border-top:0;margin-top:0 }
+.app-shell.home-shell .feature-row article { display:grid;grid-template-columns:30px 1fr;column-gap:14px;padding:18px 2px;border-bottom:1px solid #a4c4ad1c }
+.app-shell.home-shell .feature-symbol { grid-row:1/3;font-size:22px;margin:0 }
+.app-shell.home-shell .feature-row h3 { font-size:15px;margin-bottom:6px }
+.app-shell.home-shell .feature-row p { font-size:10px!important }
+.app-shell.home-shell .closing { margin:0 12px;padding:48px 25px;border-radius:22px }
+.app-shell.home-shell .closing h2 { font-size:29px }
+.app-shell.home-shell .closing .eyebrow { font-size:8px }
+.app-shell.home-shell .closing h2 br { display:none }
+.app-shell.home-shell .site-footer { padding:28px 25px;gap:12px }
+.app-shell.home-shell .site-footer p { font-size:9px }
+.app-shell.home-shell .site-footer>span { font-size:8px }
+}
+@media(prefers-reduced-motion:reduce) {
+.app-shell.home-shell * { animation:none!important;transition:none!important;scroll-behavior:auto!important }
+.app-shell.home-shell .primary:hover, .app-shell.home-shell .cluster-label:hover, .app-shell.home-shell .cluster-label[aria-pressed=true] { transform:none }
+}
+.app-shell.home-shell .flow-tracer { animation:segmentra-light-flow 24s linear infinite }
+.app-shell.home-shell .scene[data-motion="paused"] .flow-tracer, .app-shell.home-shell .scene[data-visibility="hidden"] .flow-tracer { animation-play-state:paused }
+@keyframes segmentra-light-flow { from{stroke-dashoffset:1100}to{stroke-dashoffset:0} }
+@media(prefers-reduced-motion:reduce) {
+.app-shell.home-shell .flow-tracer { animation:none!important }
+}
+@font-face { 
+  font-family: "Sora";
+  src: url("/fonts/sora-latin-variable.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+ }
+.app-shell.home-shell { 
+  font-family: "Sora", sans-serif;
+  background: #090f12;
+  color: #E8EEEC;
+  --teal: #66DCCB;
+  --coral: #F19781;
+  --gold: #E7CCA0;
+  --blue: #99BCEF;
+ }
+.app-shell.home-shell .site-header { 
+  width: min(1320px, calc(100% - 80px));
+  margin: 20px auto 0;
+  padding: 16px 25px;
+  min-height: 80px;
+  gap: 30px;
+  border: 1px solid #ADCABD20;
+  border-radius: 22px;
+  background: linear-gradient(140deg, #1b2b2eaa, #111c1bcc 58%, #18261daa);
+  box-shadow: 0 12px 35px #00000030, inset 0 1px 0 #D5E9DF0B;
+  backdrop-filter: blur(18px);
+ }
+.app-shell.home-shell .brand {  gap: 11px; font-size: 25px; letter-spacing: -1.15px; font-weight: 560;  }
+.app-shell.home-shell .brand svg {  width: 36px; height: 36px; flex-shrink: 0;  }
+.app-shell.home-shell .site-header nav {  gap: 5px; padding: 4px; background: #020A0D2B; border: 1px solid #AACBBC0F; border-radius: 16px;  }
+.app-shell.home-shell .site-header nav a {  padding: 10px 18px; font-size: 11px; font-weight: 420; letter-spacing: -.015em; min-height: 44px; border: 1px solid transparent; border-radius: 12px; transition: background .2s, color .2s;  }
+.app-shell.home-shell .site-header nav a.active {  color: #DAE9E3; border-color: #A9D0BD26; background: linear-gradient(130deg, #30443b99, #24352f66); box-shadow: 0 3px 10px #00000022, inset 0 1px 0 #B6D9C90A;  }
+.app-shell.home-shell .site-header nav a.active::after {  display: none;  }
+.app-shell.home-shell .site-header nav a:hover {  background-color: #B5D4C209;  }
+.app-shell.home-shell .prototype-badge {  color: #93ADA5; font-size: 9px; letter-spacing: .025em; padding: 9px 11px; border: 1px solid #C8DAD715; border-radius: 10px; background: #C5D5D103;  }
+.app-shell.home-shell .prototype-badge i {  background: #A7CDBA; box-shadow: 0 0 8px #9DCCB54D;  }
+.app-shell.home-shell .hero { 
+  min-height: 785px;
+  margin-top: 14px;
+  background: radial-gradient(ellipse at 69% 23%, #1C4C5145, transparent 45%), radial-gradient(ellipse at 84% 56%, #41322524, transparent 34%), radial-gradient(ellipse at 49% 68%, #20384655, transparent 44%), linear-gradient(125deg, #0B1515, #081216 60%, #0D1A19);
+  border-bottom-color: #A8C1BD1F;
+ }
+.app-shell.home-shell .hero::before {  background: linear-gradient(90deg, #0B1515F5 0%, #0B1515DB 13%, #0B151584 31%, transparent 51%);  }
+.app-shell.home-shell .hero::after {  background: linear-gradient(0deg, #090F12, transparent 22%, transparent 85%, #090F121A);  }
+.app-shell.home-shell .hero-copy {  padding-top: 98px; width: 570px;  }
+.app-shell.home-shell .hero h1 {  font-family: "Sora", sans-serif; font-size: 52px; font-weight: 470; line-height: 1.16; letter-spacing: -.055em; max-width: 495px;  }
+.app-shell.home-shell .hero h1 em {  color: #AFD6CB;  }
+.app-shell.home-shell .hero-description {  color: #A1B3B1; font-size: 13px; font-weight: 340; line-height: 1.95; max-width: 360px; margin-top: 25px;  }
+.app-shell.home-shell .eyebrow {  font-size: 9px; font-weight: 420; letter-spacing: .08em; color: #A1BAB4;  }
+.app-shell.home-shell .hero-copy .eyebrow > span {  background: #E2A694; box-shadow: 0 0 12px #D5907866;  }
+.app-shell.home-shell .hero-actions {  gap: 25px;  }
+.app-shell.home-shell .primary { 
+  color: #251B17;
+  background: linear-gradient(125deg, #F2B39C, #E8A28B 50%, #D98F79);
+  border: 1px solid #F6D3C180;
+  border-radius: 14px;
+  font-size: 11px;
+  font-weight: 570;
+  min-height: 52px;
+  padding: 15px 23px;
+  box-shadow: 0 6px 22px #A86E511A, inset 0 1px 0 #FFF1DF4D, inset 0 -2px 0 #835D4330;
+ }
+.app-shell.home-shell .primary:hover {  box-shadow: 0 8px 30px #DB907338, inset 0 1px 0 #FFF1DF66;  }
+.app-shell.home-shell .secondary {  color: #BACBC5; font-size: 10px; font-weight: 350;  }
+.app-shell.home-shell .secondary span {  color: #DCAC94;  }
+.app-shell.home-shell .hero-note {  color: #76928D; font-size: 8px; margin-top: 31px;  }
+.app-shell.home-shell .ambient-one {  background: #79BAC7; opacity: .22; right: 11%; top: -110px; transform: rotate(-25deg);  }
+.app-shell.home-shell .ambient-two {  background: #AFCDB3; opacity: .17; right: 20%; bottom: -145px;  }
+.app-shell.home-shell .cluster-light {  width: 265px; height: 265px; filter: blur(33px); opacity: .34;  }
+.app-shell.home-shell .light-teal {  background: radial-gradient(ellipse, #33B6B28C, #3D97A826 43%, transparent 72%);  }
+.app-shell.home-shell .light-coral {  background: radial-gradient(ellipse, #D9847199, #B7746330 43%, transparent 72%);  }
+.app-shell.home-shell .light-gold {  background: radial-gradient(ellipse, #C8AE7199, #C4A96D26 43%, transparent 72%);  }
+.app-shell.home-shell .light-blue {  background: radial-gradient(ellipse, #799CCA99, #617FB12B 43%, transparent 72%);  }
+.app-shell.home-shell .data-ghost {  color: #91B9BB; opacity: .23; border-color: #B3D3D51A; filter: blur(2px); background: #2B43480D;  }
+.app-shell.home-shell .cluster-label {  --accent: #66DCCB; min-height: 55px; padding: 12px 15px; gap: 11px; border-radius: 15px; color: #E1EBE8; border-color: color-mix(in srgb, var(--accent) 23%, transparent); background: linear-gradient(130deg, #243737B3, #152326B3); box-shadow: 0 10px 25px #00000036, inset 0 1px 0 #C4E0D90D; backdrop-filter: blur(14px);  }
+.app-shell.home-shell .cluster-label::before {  content: ""; position: absolute; top: -1px; left: 17px; right: 17px; height: 1px; background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent) 55%, transparent), transparent);  }
+.app-shell.home-shell .cluster-label:hover, .app-shell.home-shell .cluster-label[aria-pressed=true] {  background: linear-gradient(130deg, #314640D9, #1E2E33D9); border-color: color-mix(in srgb, var(--accent) 65%, transparent);  }
+.app-shell.home-shell .cluster-label strong {  font-size: 11px; font-weight: 450; letter-spacing: -.015em;  }
+.app-shell.home-shell .cluster-label small {  font-size: 8px; font-weight: 330; color: #A8BCB7; margin-top: 5px;  }
+.app-shell.home-shell .cluster-label b {  color: color-mix(in srgb, var(--accent) 75%, #B4C1BC); font-size: 12px;  }
+.app-shell.home-shell .label-coral {  --accent: #F19781;  }
+.app-shell.home-shell .label-gold {  --accent: #E7CCA0;  }
+.app-shell.home-shell .label-blue {  --accent: #99BCEF; left: 50%; top: 86%;  }
+.app-shell.home-shell .label-teal {  left: 51%; top: 13%;  }
+.app-shell.home-shell .label-gold {  top: 78%;  }
+.app-shell.home-shell .hero-bottom {  bottom: 20px;  }
+.app-shell.home-shell .hero-bottom p {  color: #9BB2AA; font-size: 8px; font-weight: 350;  }
+.app-shell.home-shell .scene-controls button {  border-color: #ADCBC224; background: #1A2B2B66; color: #A9BEB6; font-size: 8px; border-radius: 12px;  }
+.app-shell.home-shell .source-label {  font-size: 7px; color: #8A9EAA;  }
+.app-shell.home-shell .process {  background: radial-gradient(ellipse at 58% 48%, #253A3926, transparent 65%); border-color: #A1BCB21A;  }
+.app-shell.home-shell .section-heading h2 {  font-size: 33px; font-weight: 450; line-height: 1.23; letter-spacing: -.05em; color: #DFE7E4;  }
+.app-shell.home-shell .section-heading .eyebrow {  color: #8FA9A0; font-size: 8px;  }
+.app-shell.home-shell .section-heading > p:last-child {  color: #8CA49D; font-size: 11px; font-weight: 330; line-height: 1.9;  }
+.app-shell.home-shell .process-track h3 {  font-size: 13px; font-weight: 450; letter-spacing: -.025em;  }
+.app-shell.home-shell .process-track p {  color: #8CA298; font-size: 9px; font-weight: 330;  }
+.app-shell.home-shell .step {  background: #0C1515; color: #C1A38E;  }
+.app-shell.home-shell .file-object {  border-color: #9AAE9B66; background: linear-gradient(140deg, #55685788, #20393666); box-shadow: 8px 4px 0 #213A3844, 8px 4px 0 1px #90A59D30;  }
+.app-shell.home-shell .analytics {  background: radial-gradient(ellipse at 64% 64%, #253A3426, transparent 58%);  }
+.app-shell.home-shell .analytics-composition > article {  border-color: #ABC5B824; border-radius: 23px; background: linear-gradient(140deg, #26363377, #14212266); box-shadow: 0 12px 35px #0000001A, inset 0 1px 0 #D6E9DF06;  }
+.app-shell.home-shell .analytics-composition > .kmeans {  background: linear-gradient(140deg, #28303877, #14212377);  }
+.app-shell.home-shell .analytics h3 {  font-size: 20px; font-weight: 450; letter-spacing: -.035em;  }
+.app-shell.home-shell .feature-note {  color: #9AB1A6; font-size: 8px;  }
+.app-shell.home-shell .analytics article p {  color: #9DB0A9; font-size: 9px; font-weight: 330;  }
+.app-shell.home-shell .feature-row {  border-color: #B3D1C126;  }
+.app-shell.home-shell .feature-row h3 {  font-size: 12px; font-weight: 450;  }
+.app-shell.home-shell .feature-symbol {  color: #A8C4BA;  }
+.app-shell.home-shell .closing {  background: radial-gradient(ellipse at 72% 110%, #344C4A66, transparent 62%), radial-gradient(ellipse at 15% 30%, #41372B30, transparent 50%), linear-gradient(120deg, #152120, #111D23); border-color: #ADCABC24; box-shadow: inset 0 1px 0 #D2E7DD0A, 0 14px 40px #00000026;  }
+.app-shell.home-shell .closing h2 {  font-weight: 430; font-size: 36px; letter-spacing: -.055em;  }
+.app-shell.home-shell .closing .eyebrow {  color: #A3B7AE;  }
+.app-shell.home-shell .site-footer .brand {  font-size: 20px;  }
+.app-shell.home-shell .site-footer .brand svg {  width: 28px; height: 28px;  }
+.app-shell.home-shell .site-footer p {  color: #8DA59C; font-size: 9px;  }
+.app-shell.home-shell .site-footer > span {  font-size: 7px; color: #748E86;  }
+@media(max-width:1100px) {
+.app-shell.home-shell .site-header {  width: calc(100% - 50px); padding: 15px 20px;  }
+.app-shell.home-shell .site-header nav a {  padding: 9px 14px;  }
+.app-shell.home-shell .hero-copy {  width: 495px; padding-top: 93px;  }
+.app-shell.home-shell .hero h1 {  font-size: 46px; max-width: 430px;  }
+.app-shell.home-shell .hero-description {  max-width: 340px; font-size: 12px;  }
+.app-shell.home-shell .hero-actions {  gap: 20px;  }
+.app-shell.home-shell .cluster-label {  padding: 11px 12px; min-height: 53px; gap: 8px;  }
+.app-shell.home-shell .cluster-label strong {  font-size: 10px;  }
+.app-shell.home-shell .section-heading h2 {  font-size: 29px;  }
+.app-shell.home-shell .brand {  font-size: 23px;  }
+}
+@media(max-width:760px) {
+.app-shell.home-shell .site-header {  width: calc(100% - 36px); margin-top: 14px; padding: 15px 19px; gap: 20px;  }
+.app-shell.home-shell .site-header nav {  gap: 0;  }
+.app-shell.home-shell .site-header nav a {  padding: 9px 10px; font-size: 10px;  }
+.app-shell.home-shell .hero {  min-height: 1080px; margin-top: 10px;  }
+.app-shell.home-shell .hero-copy {  width: 100%; padding: 58px 30px 0; max-width: 590px;  }
+.app-shell.home-shell .hero h1 {  font-size: 47px; max-width: 490px;  }
+.app-shell.home-shell .hero::before {  background: linear-gradient(180deg, #0B1515 0%, #0B151500 55%);  }
+.app-shell.home-shell .hero-description {  max-width: 385px;  }
+.app-shell.home-shell .scene {  top: 435px; bottom: 90px;  }
+.app-shell.home-shell .cluster-light {  width: 180px; height: 180px;  }
+.app-shell.home-shell .label-teal {  left: 12%; top: 3%;  }
+.app-shell.home-shell .label-coral {  right: 5%; top: 17%;  }
+.app-shell.home-shell .label-gold {  right: 4%; top: 86%;  }
+.app-shell.home-shell .label-blue {  left: 8%; top: 86%;  }
+.app-shell.home-shell .section-heading h2 {  font-size: 32px;  }
+}
+@media(max-width:480px) {
+.app-shell.home-shell .site-header {  width: calc(100% - 24px); margin-top: 12px; padding: 12px 15px; min-height: 73px; border-radius: 18px; gap: 12px;  }
+.app-shell.home-shell .brand {  font-size: 22px; gap: 8px; letter-spacing: -1px;  }
+.app-shell.home-shell .brand svg {  width: 30px; height: 30px;  }
+.app-shell.home-shell .menu-button {  background: #293D3733; border-color: #ADCABC2B; border-radius: 11px; padding: 8px 11px; font-size: 10px; gap: 14px;  }
+.app-shell.home-shell .site-header nav {  background: #1A2A2B88; padding: 6px; border-radius: 13px;  }
+.app-shell.home-shell .site-header nav a {  font-size: 10px; padding: 9px 12px;  }
+.app-shell.home-shell .hero {  min-height: 1030px; margin-top: 10px;  }
+.app-shell.home-shell .hero-copy {  padding: 36px 25px 0;  }
+.app-shell.home-shell .hero h1 {  font-size: 36px; line-height: 1.22; max-width: 335px; font-weight: 470;  }
+.app-shell.home-shell .hero-copy .eyebrow {  font-size: 8px; letter-spacing: .055em; margin-bottom: 22px;  }
+.app-shell.home-shell .hero-description {  font-size: 11px; max-width: 320px; margin-top: 22px; line-height: 1.95;  }
+.app-shell.home-shell .hero-actions {  gap: 19px; margin-top: 26px;  }
+.app-shell.home-shell .primary {  font-size: 10px; padding: 13px 17px; min-height: 49px; gap: 23px; border-radius: 13px;  }
+.app-shell.home-shell .secondary {  font-size: 8px; gap: 9px;  }
+.app-shell.home-shell .scene {  top: 410px; bottom: 115px;  }
+.app-shell.home-shell .cluster-label {  max-width: 46%; padding: 11px 10px; gap: 7px; border-radius: 13px; min-height: 53px;  }
+.app-shell.home-shell .cluster-label strong {  font-size: 10px; letter-spacing: -.03em;  }
+.app-shell.home-shell .cluster-label small {  font-size: 7px; letter-spacing: -.01em;  }
+.app-shell.home-shell .label-teal {  left: 7%; top: 2%;  }
+.app-shell.home-shell .label-coral {  right: 3%; top: 17%;  }
+.app-shell.home-shell .label-gold {  right: 3%; top: 87%;  }
+.app-shell.home-shell .label-blue {  left: 4%; top: 87%;  }
+.app-shell.home-shell .cluster-light {  width: 155px; height: 155px;  }
+.app-shell.home-shell .hero-bottom {  left: 25px; right: 25px; bottom: 19px;  }
+.app-shell.home-shell .hero-bottom p {  font-size: 7px;  }
+.app-shell.home-shell .scene-controls button {  font-size: 8px;  }
+.app-shell.home-shell .section-heading h2 {  font-size: 28px;  }
+.app-shell.home-shell .section-heading > p:last-child {  font-size: 10px;  }
+.app-shell.home-shell .process-track h3 {  font-size: 13px;  }
+.app-shell.home-shell .process-track p {  font-size: 9px;  }
+.app-shell.home-shell .process-track li {  min-width: 0;  }
+.app-shell.home-shell .analytics h3 {  font-size: 20px;  }
+.app-shell.home-shell .feature-row h3 {  font-size: 13px;  }
+.app-shell.home-shell .feature-row p {  font-size: 9px !important;  }
+.app-shell.home-shell .closing h2 {  font-size: 26px; line-height: 1.3;  }
+.app-shell.home-shell .closing .eyebrow {  font-size: 7px;  }
+.app-shell.home-shell .site-footer .brand {  font-size: 19px;  }
+.app-shell.home-shell .site-footer .brand svg {  width: 26px; height: 26px;  }
+.app-shell.home-shell .site-footer p {  font-size: 8px;  }
+.app-shell.home-shell .site-footer > span {  font-size: 7px;  }
+}
+@media(prefers-reduced-motion:reduce) {
+.app-shell.home-shell .site-header nav a {  transition: none;  }
+}
+
+/* Integration boundaries: reset only shared shell properties on the Home route. */
+.app-shell.home-shell { min-height:100vh; overflow-x:clip; }
+.app-shell.home-shell .main-content { padding:0; min-height:0; }
+.app-shell.home-shell .main-content > * { margin-bottom:0; }
+.app-shell.home-shell .header-inner { display:contents; }
+.app-shell.home-shell .site-header { color:#E8EEEC; }
+.app-shell.home-shell .site-header nav { margin:0; flex-wrap:nowrap; }
+.app-shell.home-shell .site-header nav a { white-space:nowrap; text-decoration:none; }
+.app-shell.home-shell .site-header nav a.active:hover { background:linear-gradient(130deg,#30443b99,#24352f66); }
+.app-shell.home-shell .menu-button { display:none; }
+.app-shell.home-shell .site-footer { border-top:0; text-align:left; }
+.app-shell.home-shell .site-footer .service-status { color:#93ADA5; font-size:9px; }
+.app-shell.home-shell .workspace-status { color:#9BB2AA; border-color:#A8C1BD1F; }
+.app-shell.home-shell .eyebrow { text-transform:none; }
+.app-shell.home-shell .scene canvas[hidden] { display:none; }
+.app-shell.home-shell .cluster-labels { z-index:4; }
+.app-shell .brand { font-family:'Sora',sans-serif; }
+@media(max-width:1100px) { .app-shell.home-shell .site-header nav a { padding:9px 10px; } }
+@media(max-width:900px) {
+  .app-shell.home-shell .site-header { flex-wrap:wrap; }
+  .app-shell.home-shell .menu-button { display:flex; align-items:center; gap:14px; margin-left:auto; min-height:44px; padding:8px 11px; border:1px solid #ADCABC2B; border-radius:11px; background:#293D3733; color:#BACBC5; font-size:10px; }
+  .app-shell.home-shell .site-header nav { display:none; width:100%; grid-template-columns:1fr 1fr; }
+  .app-shell.home-shell .site-header nav.navigation-open { display:grid; }
+  .app-shell.home-shell .site-header nav a { justify-content:center; }
+  .app-shell.home-shell .prototype-badge { display:none; }
+}
+@media(max-width:480px) { .app-shell.home-shell .site-footer { flex-direction:row; align-items:center; } }
+
+body:has(.app-shell.home-shell) { background:#090f12; }
+
+html:has(.app-shell.home-shell) { background:#090f12; }

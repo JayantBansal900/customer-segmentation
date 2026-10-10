@@ -1,0 +1,3 @@
+Sora Latin variable font
+https://fonts.gstatic.com/s/sora/v17/xMQbuFFYT72XzQUpDg.woff2
+https://github.com/google/fonts/tree/main/ofl/sora

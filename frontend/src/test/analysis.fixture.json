@@ -1,0 +1,251 @@
+{
+  "metadata": {
+    "api_version": "1",
+    "request_id": "cae0156e7b2646e48d826a5b0e1ce00e",
+    "dataset_source": "upload",
+    "dataset_name": "fixture.csv",
+    "input_rows": 6,
+    "cleaned_rows": 6,
+    "customer_count": 6,
+    "reference_timestamp": "2024-01-21T00:00:00",
+    "preprocessing": "raw_standard",
+    "engine_preprocessing": "baseline",
+    "selected_k": 4,
+    "recommended_k": 2,
+    "total_monetary": 279.0,
+    "purchase_policy": "Positive retained purchases; excludes returns and is not true net revenue.",
+    "timestamp_policy": "UTC-normalized naive timestamps; naive source timestamps treated as UTC.",
+    "package_versions": {
+      "numpy": "2.5.3",
+      "pandas": "3.0.6",
+      "scikit-learn": "1.9.1",
+      "openpyxl": "3.1.5"
+    },
+    "pipeline_elapsed_seconds": 0.1486424999893643,
+    "analysis_elapsed_seconds": 0.16945659997873008
+  },
+  "cleaning": {
+    "input_rows": 6,
+    "missing_customer_ids": 0,
+    "cancellation_lines": 0,
+    "nonpositive_quantities": 0,
+    "nonpositive_prices": 0,
+    "exact_duplicates": 0,
+    "excluded_rows": 0,
+    "cleaned_rows": 6,
+    "retained_customers": 6
+  },
+  "model_quality": {
+    "selected": {
+      "k": 4,
+      "inertia": 0.02846703795966052,
+      "silhouette": 0.4689867431789672,
+      "silhouette_sample_size": 6,
+      "status": "ok",
+      "reason": null
+    },
+    "candidates": [
+      {
+        "k": 2,
+        "inertia": 0.15974226249714113,
+        "silhouette": 0.9105695271814294,
+        "silhouette_sample_size": 6,
+        "status": "ok",
+        "reason": null
+      },
+      {
+        "k": 3,
+        "inertia": 0.061285844094030664,
+        "silhouette": 0.5537225741138986,
+        "silhouette_sample_size": 6,
+        "status": "ok",
+        "reason": null
+      },
+      {
+        "k": 4,
+        "inertia": 0.02846703795966052,
+        "silhouette": 0.4689867431789672,
+        "silhouette_sample_size": 6,
+        "status": "ok",
+        "reason": null
+      },
+      {
+        "k": 5,
+        "inertia": 0.00711675948991513,
+        "silhouette": 0.08333333333332975,
+        "silhouette_sample_size": 6,
+        "status": "ok",
+        "reason": null
+      },
+      {
+        "k": 6,
+        "inertia": 0.0,
+        "silhouette": null,
+        "silhouette_sample_size": 6,
+        "status": "unavailable",
+        "reason": "Silhouette requires 2..N-1 labels; observed 6 labels for 6 customers."
+      }
+    ],
+    "recommendation_explanation": "Highest valid silhouette; assess business usefulness and stability separately.",
+    "silhouette_sampling": {
+      "strategy": "uniform without replacement; same subset for every K",
+      "seed": 42,
+      "maximum_customers": 1000
+    },
+    "pca": {
+      "pc1_explained_variance_ratio": 0.9982319258680974,
+      "pc2_explained_variance_ratio": 0.0017680741319026044,
+      "reason": null
+    }
+  },
+  "customers": [
+    {
+      "customer_id": "0001",
+      "recency": 20,
+      "frequency": 1,
+      "monetary": 2.0,
+      "cluster_id": 0,
+      "pc1": 1.5036864788702542,
+      "pc2": 0.06966299643031347,
+      "persona": "Less recent, Typical invoice frequency, Lower purchase value",
+      "persona_description": "Cluster median R/F/M = (19.0, 1.0, 3.0); overall customer medians = (10.5, 1.0, 42.0). Describes retained purchases only; no churn or revenue prediction."
+    },
+    {
+      "customer_id": "05",
+      "recency": 2,
+      "frequency": 1,
+      "monetary": 90.0,
+      "cluster_id": 2,
+      "pc1": -1.4047659883509698,
+      "pc2": -0.002967752707432759,
+      "persona": "More recent, Typical invoice frequency, Higher purchase value",
+      "persona_description": "Cluster median R/F/M = (2.0, 1.0, 90.0); overall customer medians = (10.5, 1.0, 42.0). Describes retained purchases only; no churn or revenue prediction."
+    },
+    {
+      "customer_id": "3",
+      "recency": 18,
+      "frequency": 1,
+      "monetary": 4.0,
+      "cluster_id": 0,
+      "pc1": 1.305845497831686,
+      "pc2": -0.06372749101544829,
+      "persona": "Less recent, Typical invoice frequency, Lower purchase value",
+      "persona_description": "Cluster median R/F/M = (19.0, 1.0, 3.0); overall customer medians = (10.5, 1.0, 42.0). Describes retained purchases only; no churn or revenue prediction."
+    },
+    {
+      "customer_id": "A2",
+      "recency": 19,
+      "frequency": 1,
+      "monetary": 3.0,
+      "cluster_id": 0,
+      "pc1": 1.4047659883509698,
+      "pc2": 0.0029677527074327813,
+      "persona": "Less recent, Typical invoice frequency, Lower purchase value",
+      "persona_description": "Cluster median R/F/M = (19.0, 1.0, 3.0); overall customer medians = (10.5, 1.0, 42.0). Describes retained purchases only; no churn or revenue prediction."
+    },
+    {
+      "customer_id": "B4",
+      "recency": 3,
+      "frequency": 1,
+      "monetary": 80.0,
+      "cluster_id": 3,
+      "pc1": -1.1608318872478718,
+      "pc2": -0.08128611956836596,
+      "persona": "More recent, Typical invoice frequency, Higher purchase value",
+      "persona_description": "Cluster median R/F/M = (3.0, 1.0, 80.0); overall customer medians = (10.5, 1.0, 42.0). Describes retained purchases only; no churn or revenue prediction."
+    },
+    {
+      "customer_id": "C6",
+      "recency": 1,
+      "frequency": 1,
+      "monetary": 100.0,
+      "cluster_id": 1,
+      "pc1": -1.648700089454068,
+      "pc2": 0.07535061415350054,
+      "persona": "More recent, Typical invoice frequency, Higher purchase value",
+      "persona_description": "Cluster median R/F/M = (1.0, 1.0, 100.0); overall customer medians = (10.5, 1.0, 42.0). Describes retained purchases only; no churn or revenue prediction."
+    }
+  ],
+  "segments": [
+    {
+      "cluster_id": 0,
+      "customer_count": 3,
+      "customer_percentage": 50.0,
+      "monetary": 9.0,
+      "monetary_contribution_percentage": 3.225806451612903,
+      "mean_rfm": {
+        "recency": 19.0,
+        "frequency": 1.0,
+        "monetary": 3.0
+      },
+      "median_rfm": {
+        "recency": 19.0,
+        "frequency": 1.0,
+        "monetary": 3.0
+      },
+      "persona": "Less recent, Typical invoice frequency, Lower purchase value",
+      "persona_description": "Cluster median R/F/M = (19.0, 1.0, 3.0); overall customer medians = (10.5, 1.0, 42.0). Describes retained purchases only; no churn or revenue prediction.",
+      "recommendations": null
+    },
+    {
+      "cluster_id": 1,
+      "customer_count": 1,
+      "customer_percentage": 16.666666666666664,
+      "monetary": 100.0,
+      "monetary_contribution_percentage": 35.842293906810035,
+      "mean_rfm": {
+        "recency": 1.0,
+        "frequency": 1.0,
+        "monetary": 100.0
+      },
+      "median_rfm": {
+        "recency": 1.0,
+        "frequency": 1.0,
+        "monetary": 100.0
+      },
+      "persona": "More recent, Typical invoice frequency, Higher purchase value",
+      "persona_description": "Cluster median R/F/M = (1.0, 1.0, 100.0); overall customer medians = (10.5, 1.0, 42.0). Describes retained purchases only; no churn or revenue prediction.",
+      "recommendations": null
+    },
+    {
+      "cluster_id": 2,
+      "customer_count": 1,
+      "customer_percentage": 16.666666666666664,
+      "monetary": 90.0,
+      "monetary_contribution_percentage": 32.25806451612903,
+      "mean_rfm": {
+        "recency": 2.0,
+        "frequency": 1.0,
+        "monetary": 90.0
+      },
+      "median_rfm": {
+        "recency": 2.0,
+        "frequency": 1.0,
+        "monetary": 90.0
+      },
+      "persona": "More recent, Typical invoice frequency, Higher purchase value",
+      "persona_description": "Cluster median R/F/M = (2.0, 1.0, 90.0); overall customer medians = (10.5, 1.0, 42.0). Describes retained purchases only; no churn or revenue prediction.",
+      "recommendations": null
+    },
+    {
+      "cluster_id": 3,
+      "customer_count": 1,
+      "customer_percentage": 16.666666666666664,
+      "monetary": 80.0,
+      "monetary_contribution_percentage": 28.673835125448026,
+      "mean_rfm": {
+        "recency": 3.0,
+        "frequency": 1.0,
+        "monetary": 80.0
+      },
+      "median_rfm": {
+        "recency": 3.0,
+        "frequency": 1.0,
+        "monetary": 80.0
+      },
+      "persona": "More recent, Typical invoice frequency, Higher purchase value",
+      "persona_description": "Cluster median R/F/M = (3.0, 1.0, 80.0); overall customer medians = (10.5, 1.0, 42.0). Describes retained purchases only; no churn or revenue prediction.",
+      "recommendations": null
+    }
+  ]
+}

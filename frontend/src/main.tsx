@@ -1,0 +1,10 @@
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
+import { App } from './app/App';
+import { AnalysisProvider } from './context/AnalysisContext';
+import './styles/index.css';
+import './styles/futuristic.css';
+import './styles/typography.css';
+
+createRoot(document.getElementById('root')!).render(<StrictMode><BrowserRouter><AnalysisProvider><App /></AnalysisProvider></BrowserRouter></StrictMode>);
