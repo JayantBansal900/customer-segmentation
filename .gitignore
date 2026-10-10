@@ -1,6 +1,8 @@
 # Python environments and generated caches
+# Python environments and generated caches
 venv/
 .venv/
+.venv312/
 *-env/
 __pycache__/
 *.py[cod]
@@ -42,3 +44,6 @@ local-data/
 /validation_report.json
 /project_structure.txt
 /frontend/http-validation.json
+
+# Local historical originals and cleanup checkpoints; not publication docs
+/docs/development-history/local-archive/

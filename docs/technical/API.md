@@ -1,21 +1,10 @@
-# SegmentIQ API v1 — Phase 2A
+# Segmentra API v1
 
 The FastAPI service is a thin adapter around the unchanged `segmentation` package. The engine owns ingestion, cleaning, purchase-only RFM, preprocessing, KMeans, candidate evaluation, PCA, profiles, and personas. The API owns multipart validation, resource limits, HTTP errors, admission control, and typed JSON serialization.
 
-## Local startup
+## Running and inspecting the service
 
-From the repository root, create a dedicated environment; do not use the original project's `venv`:
-
-```powershell
-py -3.12 -m venv .backend-env
-& .\.backend-env\Scripts\python.exe -m pip install -e '.[backend,test]'
-$env:OMP_NUM_THREADS='1'
-$env:OPENBLAS_NUM_THREADS='1'
-$env:MKL_NUM_THREADS='1'
-& .\.backend-env\Scripts\python.exe -m uvicorn backend.main:app --host 127.0.0.1 --port 8000 --workers 1
-```
-
-Python 3.11+ is supported by the package; validation used Python 3.12. Use one process for the documented local capacity limit. Numerical thread settings reduce CPU oversubscription; they do not alter the algorithms. `GET /docs` provides Swagger UI, `/redoc` provides ReDoc, and `/openapi.json` provides the generated machine-readable schemas. The example requires `Online Retail.xlsx` beside the backend package's parent directory. Use a repository checkout/editable installation; a wheel does not bundle that workbook.
+Use the [root setup guide](../../README.md#local-setup) for installation and startup. The service entry point is `backend.main:app`; `/docs`, `/redoc` and `/openapi.json` expose the actual schema. The example workbook is resolved from the repository root, not the caller's working directory. It is not bundled in a Python wheel.
 
 ## Endpoints and request contract
 
@@ -35,7 +24,7 @@ Python 3.11+ is supported by the package; validation used Python 3.12. Use one p
 
 Selected K may lie outside the candidate interval. Individual candidates that do not satisfy mathematical constraints remain in the result with status/reason; they do not force the selected K to change. The API's K/range ceilings are resource policy, not changes to the ML engine.
 
-CSV requires UTF-8 (optional BOM), a header, comma separators, and equally sized records. XLSX uses the first sheet and its first row as the header. Required case-sensitive columns are `CustomerID`, `InvoiceNo`, `InvoiceDate`, `Quantity`, and `UnitPrice`; extra source columns are retained for the engine's duplicate policy. Text identifiers retain leading zeros. Display formatting on numeric Excel cells cannot recover zeros missing from the stored value. Missing CustomerID is removed by cleaning; missing invoice IDs, invalid/ambiguous dates, and nonfinite/nonnumeric quantities or prices fail semantic validation. Quantities need not be whole numbers. See the Phase 1 documentation for the precise cleaning and timestamp policies.
+CSV requires UTF-8 (optional BOM), a header, comma separators, and equally sized records. XLSX uses the first sheet and its first row as the header. Required case-sensitive columns are `CustomerID`, `InvoiceNo`, `InvoiceDate`, `Quantity`, and `UnitPrice`; extra source columns are retained for the engine's duplicate policy. Text identifiers retain leading zeros. Display formatting on numeric Excel cells cannot recover zeros missing from the stored value. Missing CustomerID is removed by cleaning; missing invoice IDs, invalid/ambiguous dates, and nonfinite/nonnumeric quantities or prices fail semantic validation. Quantities need not be whole numbers. See [ML pipeline](ML_PIPELINE.md) for cleaning and timestamp policies.
 
 Example upload:
 
@@ -126,24 +115,12 @@ The original workbook is 23,715,344 bytes, with declared ZIP expansion 184,964,7
 
 File-size/ZIP checks are admission safeguards, not a strict process-memory or CPU-time sandbox. The existing engine materializes transaction DataFrames, scans CSV structure before parsing, and may normalize an already loaded frame in its public pipeline. The adapter calls ingestion once and the public pipeline once; it does not duplicate analytics. Response validation and serialization occur in the same worker thread. The event loop remains available for health requests.
 
-## Tests and known limitations
+## Tests and service limitations
 
-From the repository root after installing the test extra:
+See the [root testing guide](../../README.md#testing). API and upload security cases are covered by `tests/test_backend_api.py` and `tests/test_release_security.py`. Historical measurements are summarized in [development history](../development-history/DEVELOPMENT_SUMMARY.md).
 
-```powershell
-$env:OMP_NUM_THREADS='1'
-$env:OPENBLAS_NUM_THREADS='1'
-$env:MKL_NUM_THREADS='1'
-& .\.backend-env\Scripts\python.exe -B -m pytest -p no:cacheprovider -q
-& .\.backend-env\Scripts\python.exe -m pip check
-```
+This is a synchronous local service: the HTTP request waits for analysis. There is no persisted result, pagination, progress endpoint, background job, hard execution timeout, or cancellation API. A client timeout does not guarantee worker cancellation. Every accepted request computes anew. One-process admission control is not a distributed limit. The response includes all retained customers, so large datasets consume memory during mapping/serialization and increase download size. CSV/XLSX safeguards and explicit CORS configuration are implemented; authentication, a database, and production deployment are not. See [security](SECURITY.md) and [deployment](DEPLOYMENT.md). Alternate supported dependency versions, multi-process capacity, actual hosting ingress and sustained load remain unverified. Browser workflow milestones are recorded in development history; they are separate from API unit tests.
 
-Routine tests use deterministic tiny CSV/XLSX fixtures. Real HTTP/workbook results and measured latency/response bytes are recorded in `api_http_validation.json` and `PHASE2A_VALIDATION.md`.
+## Upload security
 
-This is a synchronous local service: the HTTP request waits for analysis. There is no persisted result, pagination, progress endpoint, background job, hard execution timeout, or cancellation API. A client timeout does not guarantee worker cancellation. Every accepted request computes anew. One-process admission control is not a distributed limit. The response includes all retained customers, so large datasets consume memory during mapping/serialization and increase download size. No production Internet security hardening, authentication, database, or deployment has been implemented. Alternative dependency versions, multi-process capacity, browser UI behavior, production proxies, and sustained-load performance are NOT TESTED.
-
-For Phase 2B, build an API client from the documented schema, add a genuine loading state and generous request timeout based on measured workbook latency, handle 503 without an automatic retry storm, render structured field/row errors, format percentage points correctly, and render null metrics explicitly. Keep selected/recommended K separate and show preprocessing/purchase-policy context. Implement future charts from returned RFM/PCA/profile fields; this phase does not create charts or UI.
-
-## Phase 5B security and release configuration
-
-See `DEPLOYMENT_READINESS.md` for production origin/routing/startup requirements and `DATASET_NOTICE.md` for example attribution. XLSX parsing requires active `defusedxml==0.7.1`; startup fails closed without it. Prohibited XML entities/external references return HTTP 400 `invalid_workbook`, stage `ingestion`, using the existing error envelope and a generic safe message. Other ingestion validation errors retain their documented codes/statuses. Archive duplicate names are rejected; file, request, member and expanded-size budgets remain unchanged.
+See [deployment requirements](DEPLOYMENT.md) for production origin/routing/startup requirements and [dataset notice](DATASET.md) for example attribution. XLSX parsing requires active `defusedxml==0.7.1`; startup fails closed without it. Prohibited XML entities/external references return HTTP 400 `invalid_workbook`, stage `ingestion`, using the existing error envelope and a generic safe message. Other ingestion validation errors retain their documented codes/statuses. Archive duplicate names are rejected; file, request, member and expanded-size budgets remain unchanged.

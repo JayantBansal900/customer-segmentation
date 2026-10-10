@@ -54,7 +54,7 @@ The engine removes missing customer IDs, uppercase `C` cancellation invoices, no
 
 Candidate K values are compared by valid silhouette scores; your selected K stays independent of the recommendation. Evaluation uses at most 1,000 customers and the same seeded subset for every candidate. PCA provides a two-dimensional view; it is not the clustering input. Profiles and personas describe historical behavior, not churn or revenue predictions.
 
-Open **Methodology** in the app for formulas, sampling rules and analytical caveats. See [API documentation](BACKEND_API.md) for request and response details.
+Open **Methodology** in the app for formulas, sampling rules and analytical caveats. See [API documentation](docs/technical/API.md) for request and response details.
 
 ## Project structure
 
@@ -72,7 +72,10 @@ customer-segmentation/
 ├── segmentation/        # Independent Python RFM/ML engine
 ├── tests/               # Python and API security tests
 ├── tools/               # Optional full-workbook validation
-├── docs/screenshots/    # Current application screenshots
+├── docs/
+│   ├── technical/       # Architecture, ML, API, security, deployment and dataset
+│   ├── development-history/ # Concise milestones; local originals are ignored
+│   └── screenshots/     # Current public application screenshots
 ├── Online Retail.xlsx   # Attributed public example, inherited in Git
 ├── pyproject.toml
 └── requirements-backend.txt
@@ -143,7 +146,7 @@ Results stay in memory while navigating and reset on a full refresh. Changing an
 
 The repository retains the original **Online Retail.xlsx**, a public dataset by **Chen, D. (2015)** from the [UCI Machine Learning Repository](https://archive.ics.uci.edu/dataset/352/online+retail), DOI [10.24432/C5BW33](https://doi.org/10.24432/C5BW33). UCI licenses it under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The workbook is unmodified; Segmentra derives cleaned purchase profiles from it.
 
-See [DATASET_NOTICE.md](DATASET_NOTICE.md) for provenance, attribution and deployment provisioning. If the workbook is missing from your checkout, download the official dataset and place the extracted workbook at the repository root. Private uploads and exports belong outside Git and static hosting.
+See [DATASET.md](docs/technical/DATASET.md) for provenance, attribution and deployment provisioning. If the workbook is missing from your checkout, download the official dataset and place the extracted workbook at the repository root. Private uploads and exports belong outside Git and static hosting.
 
 Dataset licensing is separate from Segmentra source code. No source-code license has been selected; this README does not grant an open-source license. Sora's license and font source are retained in [frontend/public/fonts](frontend/public/fonts).
 
@@ -167,11 +170,11 @@ npm run build
 npm test -- src/test/csv-security.test.ts
 ```
 
-Test counts are recorded in dated release reports rather than promised as a permanent guarantee. The tests cover RFM semantics, cleaning, clustering, API validation, upload cleanup, prohibited XML, CORS, CSV security, frontend state, navigation and scene lifecycle behavior.
+Historical milestones are recorded in [development history](docs/development-history/DEVELOPMENT_SUMMARY.md), rather than promised as a permanent guarantee. The tests cover RFM semantics, cleaning, clustering, API validation, upload cleanup, prohibited XML, CORS, CSV security, frontend state, navigation and scene lifecycle behavior.
 
 ## Security and limitations
 
-- XLSX uploads use active XML protection, archive checks and size budgets. CSV exports visibly prefix formula-like text with `[text] `; raw API/explorer identifiers stay unchanged. Import ordinary leading-zero IDs as text. See [export policy](EXPORT_SECURITY.md).
+- XLSX uploads use active XML protection, archive checks and size budgets. CSV exports visibly prefix formula-like text with `[text] `; raw API/explorer identifiers stay unchanged. Import ordinary leading-zero IDs as text. See [export policy](docs/technical/SECURITY.md).
 - Data quality, outliers and preprocessing affect clusters. Silhouette measures separation, not business usefulness; scores across different preprocessing spaces are not directly comparable.
 - Large workbooks require significant CPU time and memory. Upload/ZIP budgets are not complete memory or computation-time bounds. One analysis is admitted per process by default.
 - Personas describe retained purchases. No authentication, database, saved server-side analyses or background job queue is implemented.
@@ -180,8 +183,12 @@ Test counts are recorded in dated release reports rather than promised as a perm
 
 **Deployment is pending; no public application URL is available.** Local production builds have been verified. A chosen host still needs installation, resource-capacity, HTTPS, exact-origin CORS, request admission/rate limits, private temporary storage and SPA/API routing checks. Vite preview is a local validation server.
 
-Review [DEPLOYMENT_READINESS.md](DEPLOYMENT_READINESS.md) before hosting. Public CORS configuration alone does not prevent abuse of unauthenticated computation.
+Review [DEPLOYMENT.md](docs/technical/DEPLOYMENT.md) before hosting. Public CORS configuration alone does not prevent abuse of unauthenticated computation.
 
 ## Author and repository
 
 Maintained in [JayantBansal900/customer-segmentation](https://github.com/JayantBansal900/customer-segmentation) by [JayantBansal900](https://github.com/JayantBansal900). Repository history and original project files are preserved.
+
+## Technical documentation
+
+[Architecture](docs/technical/ARCHITECTURE.md) · [ML pipeline](docs/technical/ML_PIPELINE.md) · [API](docs/technical/API.md) · [Security](docs/technical/SECURITY.md) · [Deployment](docs/technical/DEPLOYMENT.md) · [Dataset](docs/technical/DATASET.md)

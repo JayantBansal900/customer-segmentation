@@ -22,11 +22,11 @@ The browser waits up to `VITE_ANALYSIS_TIMEOUT_MS=300000`; the development proxy
 
 Historical Phase 5A example: approximately 88.28 s, 482 MiB sampled resident memory and 1.71 MB response. Treat these as measurements of one run, not bounds. A 512 MiB host has inadequate headroom. Start capacity evaluation with at least 1 GiB and preferably 2 GiB per worker, then load-test the selected host and maximum permitted inputs. One worker preserves global per-process admission; multiple workers multiply memory and analysis capacity. Keep `SEGMENTIQ_MAX_CONCURRENT_ANALYSES=1` until measured otherwise. Health is asynchronous while analysis runs in a thread; excess analysis requests return 503 `analysis_busy` and Retry-After 1.
 
-## Required gates before push/hosting
+## Required gates before hosting
 
-1. Review the staged source manifest, run secret scanning and choose a source-code license. Preserve inherited originals; include dataset/font notices. No private uploads/exports/env values.
+1. Review the intended deployment files and scan for secrets. Preserve dataset/font notices; exclude private uploads, exports and local archives. Source-code licensing remains an owner decision; it is separate from the verified dataset license.
 2. Reproduce installation, tests and build on the target OS; review current runtime advisories and installer advisories separately.
 3. Select a host with demonstrated memory/CPU/temporary-disk headroom; configure HTTPS, exact origins, SPA/API routing and ingestion/abuse limits.
 4. Stage-test example, upload limits, invalid XML, busy responses, health responsiveness, disconnect behavior and deep-link refresh through the actual ingress.
 5. Decide whether to provision the public UCI example and retain attribution. Never serve raw uploads/workbooks as static assets.
-6. Obtain the user's authorization for GitHub push and deployment. Phase 5B grants neither.
+6. Obtain separate deployment authorization after the hosting checks pass. The Phase 5D GitHub publication is historical; this cleanup performs no commit, push or deployment.
