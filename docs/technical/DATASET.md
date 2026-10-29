@@ -1,9 +1,0 @@
-# Online Retail dataset notice
-
-Source: [UCI Online Retail](https://archive.ics.uci.edu/dataset/352/online+retail). Citation: Chen, D. (2015). Online Retail. UCI Machine Learning Repository. https://doi.org/10.24432/C5BW33. UCI licenses the dataset under [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/). Retain attribution, a license link, and describe modifications when redistributing. Segmentra analysis derives cleaned purchase-only RFM profiles; the bundled workbook itself is unmodified. This notice does not choose a license for Segmentra source code.
-
-The local workbook was compared against the workbook extracted from UCI's official download. Both contain 23,715,344 bytes with SHA-256 `43465a06f2ccf7c8b5bd2892bc7defb52f97487934fe93b16ae4c3936424676d`; they are byte-identical. Redistribution provenance is verified, rather than inferred from a filename.
-
-Customer numbers are pseudonymous identifiers, not proof of anonymity. Transactions can still reveal purchasing behavior. Do not put private replacement datasets, uploaded files, exports, or customer screenshots into Git. The original workbook is already in inherited Git history and was retained in the Phase 5D publication; this cleanup neither changes nor republishes it. Preserve the original project/history.
-
-For hosting, provision the example workbook read-only at the repository-root `Online Retail.xlsx` expected by the server, outside frontend/static serving. Prefer a separately downloaded, hash-verified deployment asset rather than repeatedly embedding it in images. If absent, the existing example request returns 503 `example_unavailable`; CSV/XLSX uploads remain available. Include this attribution in any public example deployment/distribution and review public display of the historical transactional data before publication. Dataset license permission is not a privacy guarantee.
