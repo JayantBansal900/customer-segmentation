@@ -1,4 +1,5 @@
 # Segmentra
+[![CI](https://github.com/JayantBansal900/customer-segmentation/actions/workflows/ci.yml/badge.svg)](https://github.com/JayantBansal900/customer-segmentation/actions/workflows/ci.yml)
 
 **Customer Segmentation & Behavioral Intelligence Platform**
 
