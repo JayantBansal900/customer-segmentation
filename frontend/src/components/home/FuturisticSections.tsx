@@ -45,7 +45,7 @@ const STEPS = [
 
 function StepsSection() {
   return <section className="home-steps" aria-labelledby="steps-heading">
-    <h2 id="steps-heading">Three steps, about ten seconds.</h2>
+    <h2 id="steps-heading">Three steps, about 20 seconds.</h2>
     <ol>{STEPS.map(([title, text], i) => <li key={title}><span aria-hidden="true">{i + 1}</span><h3>{title}</h3><p>{text}</p></li>)}</ol>
     <Link to="/methodology" className="steps-link">See how the grouping works</Link>
   </section>;

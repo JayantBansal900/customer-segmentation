@@ -26,7 +26,7 @@ export function About() {
       <figure className="funnel" aria-labelledby="funnel-caption">
         <figcaption id="funnel-caption">The Online Retail example, from file to groups</figcaption>
         <ol>{FUNNEL.map((step, i) => <li key={step.value} style={{ ['--step' as string]: i }}><strong>{step.value}</strong><span>{step.label}</span></li>)}</ol>
-        <p>Takes about 11 seconds.</p>
+        <p>Takes about 20 seconds.</p>
       </figure>
     </section>
 

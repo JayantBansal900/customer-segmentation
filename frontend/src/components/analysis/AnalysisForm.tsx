@@ -57,7 +57,7 @@ export function AnalysisForm() {
     </fieldset>
 
     <section className="analysis-step run-step" aria-labelledby="run-title">
-      <div className="run-heading"><span className="workflow-index">03</span><div><h2 id="run-title">Run the analysis</h2><p>{config.source === 'example' ? 'The example takes about 10 seconds.' : 'Large files can take up to a minute.'}</p></div></div>
+      <div className="run-heading"><span className="workflow-index">03</span><div><h2 id="run-title">Run the analysis</h2><p>{config.source === 'example' ? 'The example takes about 20 seconds.' : 'Large files can take up to a minute.'}</p></div></div>
       {issues.length > 0 && <ul id="configuration-issues" className="validation-list">{issues.map(issue => <li key={issue}>{issue}</li>)}</ul>}
       <div className="run-action-row"><p className="run-note">Results open in Segments and Insights.</p>
         <div className="actions"><button className="button run-segmentation" type="submit" disabled={running || issues.length > 0 || !!uploadError} aria-describedby={issues.length ? 'configuration-issues' : undefined}>{running ? 'Analysis running…' : 'Run Segmentation'}<span aria-hidden="true">{running ? '◌' : '↗'}</span></button>{running && <button type="button" className="button secondary" onClick={cancel}>Stop waiting</button>}</div>
