@@ -17,7 +17,7 @@ export function SegmentDistribution({ segments, selected, onSelect, names }: { s
       {names && <span className="segment-card-id">Cluster {s.cluster_id}</span>}
       <span className="segment-card-share"><strong>{formatPercent(s.customer_percentage)}</strong> of customers <small>{formatNumber(s.customer_count)}</small></span>
       <span className="segment-card-share"><strong>{formatPercent(s.monetary_contribution_percentage)}</strong> of sales</span>
-      <span className="segment-card-rfm">{formatNumber(s.median_rfm.recency)} days · {formatNumber(s.median_rfm.frequency)} orders · {formatNumber(s.median_rfm.monetary)} spent</span>
+      <span className="segment-card-rfm">{formatNumber(s.median_rfm.recency)} days · {formatNumber(s.median_rfm.frequency)} {s.median_rfm.frequency === 1 ? 'order' : 'orders'} · {formatNumber(s.median_rfm.monetary)} spent</span>
     </button>)}</div>
   </section>;
 }
