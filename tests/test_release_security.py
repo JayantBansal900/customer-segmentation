@@ -7,7 +7,9 @@ from fastapi.testclient import TestClient
 from openpyxl import Workbook
 from backend.config import Settings
 from backend.main import create_app
-from backend.services import analysis_service
+from segmentation import ingestion
+from segmentation.errors import UnsafeWorkbookError
+from segmentation.ingestion import load_transactions
 
 FIELDS = {"selected_k": "2", "candidate_k_min": "2", "candidate_k_max": "2"}
 
@@ -46,10 +48,16 @@ def test_prohibited_xml_is_safe_error_closes_upload_and_releases_capacity(tmp_pa
         assert client.get("/api/health").status_code==200
     assert all(handle.closed for handle in handles)
 
-def test_xlsx_hardening_fail_closed(monkeypatch):
-    monkeypatch.setattr(analysis_service,"DEFUSEDXML",False)
-    with pytest.raises(RuntimeError,match="active defusedxml"):
-        create_app()
+@pytest.mark.parametrize("encoding",["utf-8","utf-16-le","utf-16-be"])
+def test_xml_declarations_rejected_before_parsing(encoding):
+    declaration='<!DOCTYPE worksheet [<!ENTITY demo "x">]>'.encode(encoding)
+    with pytest.raises(UnsafeWorkbookError):
+        load_transactions(BytesIO(modify_xml(workbook(),"xl/worksheets/sheet1.xml",declaration)),file_format="xlsx")
+
+def test_declaration_split_across_read_chunks(monkeypatch):
+    monkeypatch.setattr(ingestion,"_CHUNK",7)
+    with pytest.raises(UnsafeWorkbookError):
+        load_transactions(BytesIO(modify_xml(workbook(),"xl/styles.xml",b'<!DOCTYPE x>')),file_format="xlsx")
 
 def test_duplicate_archive_members_rejected(tmp_path):
     content=workbook();result=BytesIO()

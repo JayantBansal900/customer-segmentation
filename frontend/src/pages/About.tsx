@@ -1,12 +1,57 @@
 import { Link } from 'react-router-dom';
-import { TechnicalDetails } from '../components/ui/TechnicalDetails';
+import '../styles/story-pages.css';
+
+// Real figures from running the bundled Online Retail example with the default settings (K = 4).
+const FUNNEL = [
+  { value: '541,909', label: 'transaction lines in the file' },
+  { value: '392,692', label: 'kept after removing returns, duplicates and rows without a customer' },
+  { value: '4,338', label: 'customers, each with an RFM profile' },
+  { value: '4', label: 'customer groups you can compare' },
+];
+
+const STACK = [
+  { area: 'Interface', tools: ['React', 'TypeScript', 'Vite'], text: 'Six pages, charts drawn with SVG and Canvas, no chart library.' },
+  { area: 'API', tools: ['FastAPI', 'Pydantic', 'Uvicorn'], text: 'Checks every upload, runs one analysis at a time and returns typed JSON.' },
+  { area: 'Analysis', tools: ['pandas', 'scikit-learn', 'calamine'], text: 'Cleans transactions, builds RFM, runs KMeans and scores each K.' },
+];
 
 export function About() {
-  return <article className="product-page about-page"><div className="about-composition"><header className="product-heading"><p className="section-kicker">About Segmentra</p><h1>Making customer behavior <em>understandable.</em></h1><p>Segmentra groups customers by past purchases, making their patterns easier to explore.</p></header><div className="conceptual-rfm" role="img" aria-label="Conceptual RFM illustration: recency, frequency and monetary value form a customer profile. This is not analysis data."><span className="concept-label">Conceptual customer profile</span><div className="rfm-symbols" aria-hidden="true"><span>R</span><span>F</span><span>M</span></div><p>Purchase history.<br />A clearer picture.</p></div></div>
-    <section className="editorial-split"><div><p className="section-kicker">Why Segmentra?</p><h2>See beyond individual transactions.</h2></div><div><p>Averages can hide differences between customers. Segmentra builds RFM profiles and groups similar purchase behavior with KMeans.</p><p>Compare groups, inspect customers, and export the results.</p></div></section>
-    <section className="editorial-split"><div><p className="section-kicker">What you can do</p><h2>Upload. Analyze. Explore.</h2></div><ol className="capability-list"><li>Upload CSV or XLSX, or try the retail example.</li><li>Choose RFM scaling and the number of groups.</li><li>Compare profiles, explore charts, and export results.</li></ol></section>
-    <section className="panel"><p className="section-kicker">Verified technology</p><h2>A focused engineering project.</h2><div className="foundations"><span>React + TypeScript</span><span>FastAPI + Python</span><span>pandas + scikit-learn</span></div><TechnicalDetails summary="More about the stack"><p>Vite and React Router power navigation. NumPy, openpyxl and defusedxml support the Python pipeline. The frontend displays actual typed API results.</p></TechnicalDetails></section>
-    <section className="editorial-split"><div><p className="section-kicker">Honest limits</p><h2>Patterns, not predictions.</h2></div><div><p>A personal project for exploring historical purchases. Personas do not predict churn or future revenue. Purchase value excludes returns; currency is not inferred.</p><TechnicalDetails summary="Results, privacy and exports"><p>Results stay in browser memory while navigating. Reloading clears results and files; stopping the browser wait does not stop server computation. There are no accounts, database or background jobs.</p><p>Customer IDs and purchases can be sensitive. Use data you are authorized to analyze. CSV exports prefix formula-like text with [text]; original IDs stay unchanged in results. Import IDs as text to keep leading zeros.</p></TechnicalDetails><Link className="text-link" to="/methodology">Explore the methodology →</Link></div></section>
-    <section className="closing-cta"><div><p className="section-kicker">Start exploring</p><h2>Find the patterns in your data.</h2></div><div className="actions"><Link className="button" to="/analyze">Start Analyzing <span aria-hidden="true">↗</span></Link><Link className="button secondary" to="/methodology">Explore Methodology <span aria-hidden="true">→</span></Link></div></section>
+  return <article className="product-page story-page about-page">
+    <section className="about-hero">
+      <header>
+        <h1>Making customer behavior understandable.</h1>
+        <p className="story-lead">Most shops can tell you their total sales. Few can tell you which customers behave alike. Segmentra takes a plain sales export and sorts every customer into a group you can describe in one sentence.</p>
+        <div className="story-actions"><Link className="button" to="/analyze">Start Analyzing</Link><Link className="button secondary" to="/methodology">Explore Methodology</Link></div>
+      </header>
+      <figure className="funnel" aria-labelledby="funnel-caption">
+        <figcaption id="funnel-caption">The Online Retail example, from file to groups</figcaption>
+        <ol>{FUNNEL.map((step, i) => <li key={step.value} style={{ ['--step' as string]: i }}><strong>{step.value}</strong><span>{step.label}</span></li>)}</ol>
+        <p>Takes about 11 seconds.</p>
+      </figure>
+    </section>
+
+    <section className="story-row" aria-labelledby="why-title">
+      <h2 id="why-title">Why it exists</h2>
+      <div className="story-copy">
+        <p>Averages hide people. A store with a healthy average order can still be losing its best customers while one-time buyers pile up. Grouping customers by <em>when</em> they last bought, <em>how often</em> they buy and <em>how much</em> they spend makes those patterns visible.</p>
+        <p>Segmentra is a personal project that does this end to end: upload a file, pick the number of groups, then explore and export the result.</p>
+      </div>
+    </section>
+
+    <section className="story-row" aria-labelledby="stack-title">
+      <h2 id="stack-title">How it's built</h2>
+      <ul className="stack-grid">{STACK.map(part => <li key={part.area}><h3>{part.area}</h3><p className="stack-tools">{part.tools.map(tool => <span key={tool}>{tool}</span>)}</p><p>{part.text}</p></li>)}</ul>
+    </section>
+
+    <section className="story-row" aria-labelledby="maker-title">
+      <h2 id="maker-title">Who made it</h2>
+      <div className="maker">
+        <p className="maker-name">Jayant Bansal</p>
+        <p>Designed and built the interface, the API and the analysis engine. The code, tests and documentation are on GitHub.</p>
+        <p className="maker-links"><a className="text-link" href="https://github.com/JayantBansal900/customer-segmentation" target="_blank" rel="noreferrer">View the source code</a><a className="text-link" href="https://github.com/JayantBansal900" target="_blank" rel="noreferrer">GitHub profile</a></p>
+      </div>
+    </section>
+
+    <p className="story-footnote">Groups describe past purchases; they don't predict the future. The example data is the UCI Online Retail dataset (Chen, 2015), licensed CC BY 4.0.</p>
   </article>;
 }

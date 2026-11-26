@@ -171,3 +171,20 @@ def test_corrupt_workbook_is_structured():
     with pytest.raises(AnalysisValidationError) as caught:
         load_transactions(BytesIO(b"not a workbook"), file_format="xlsx")
     assert caught.value.issues[0].code == "read_error"
+
+
+def test_typed_csv_columns_match_object_column_validation():
+    """The vectorized CSV path must give the same result as the per-value path."""
+    rows = " 0007 ,I1,2020-01-01,2,3\n,I2,2020-01-02T10:00:00,1,4\nA9, I3 ,2020-01-03 08:00,1,5\n"
+    typed = load_transactions(csv_source(rows), file_format="csv")
+    frame = pd.read_csv(csv_source(rows), dtype=object, keep_default_na=False)
+    untyped = normalize_transactions(frame)
+    assert typed.CustomerID.tolist()[0] == "0007" and pd.isna(typed.CustomerID.iloc[1])
+    assert typed.InvoiceNo.tolist() == ["I1", "I2", "I3"]
+    pd.testing.assert_frame_equal(typed[["CustomerID", "InvoiceNo", "InvoiceDate"]], untyped[["CustomerID", "InvoiceNo", "InvoiceDate"]])
+
+
+def test_typed_csv_rejects_non_iso_and_blank_dates():
+    with pytest.raises(AnalysisValidationError) as error:
+        load_transactions(csv_source("1,I1,01/02/2020,1,1\n2,I2,,1,1\n"), file_format="csv")
+    assert error.value.issues[0].code == "invalid_date" and error.value.issues[0].rows == (2, 3)

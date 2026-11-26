@@ -7,7 +7,7 @@ Turn transaction history into customer groups you can explore. Segmentra combine
 
 ![Segmentra Home](docs/screenshots/home.jpg)
 
-[Features](#features) · [Local setup](#local-setup) · [How it works](#how-it-works) · [Dataset](#dataset-and-attribution) · [Deployment](#deployment-status)
+[Features](#features) · [Local setup](#local-setup) · [Your data](#preparing-your-data) · [How it works](#how-it-works) · [Dataset](#dataset-and-attribution) · [Deployment](#deployment-status)
 
 ## Features
 
@@ -38,7 +38,7 @@ Screenshots show the current application. Analytical values come from a real run
 | Backend | Python, FastAPI, Pydantic, Uvicorn; bounded multipart ingestion |
 | Machine learning | pandas, NumPy, scikit-learn: StandardScaler, KMeans, silhouette and PCA |
 | Visualization | Custom WebGL/SVG particle scene, Canvas PCA plot, SVG candidate chart and HTML distribution charts |
-| File processing | openpyxl with defusedxml for XLSX; PapaParse for preliminary browser CSV preview |
+| File processing | python-calamine (Rust) for fast XLSX reading, with DTD/entity rejection before parsing; PapaParse for the browser CSV preview |
 | Testing | pytest and HTTP API tests; Vitest, Testing Library and jsdom |
 
 ## How it works
@@ -128,15 +128,41 @@ Open **http://127.0.0.1:5173**. If this terminal is already at the repository ro
 3. Run segmentation and wait for the actual result.
 4. Explore **Segments** and **Insights**, then export the records or profiles you need.
 
-| Required column | Expected content |
-| --- | --- |
-| `CustomerID` | Customer identifier; keep leading zeros as text. Blank IDs are excluded during cleaning. |
-| `InvoiceNo` | Purchase invoice identifier. |
-| `InvoiceDate` | ISO date/time or a typed Excel date; supply an explicit format for non-ISO CSV dates. |
-| `Quantity` | Finite numeric quantity. |
-| `UnitPrice` | Finite numeric unit price. |
+### Preparing your data
 
-CSV must use UTF-8; XLSX reads the first worksheet. Other columns may be present. Invalid dates/numeric values, duplicate headers or missing required columns produce validation errors; transaction values are not imputed. The default upload limit is 64 MiB. K is bounded by usable customers and distinct feature vectors, and the API supports at most 10 candidate values per request.
+Upload **one CSV or Excel (.xlsx) file** where **each row is one product line of a sale**, the way most shop systems export orders. Your file **must** contain these five columns, spelled exactly like this (names are case-sensitive):
+
+| Column | What it holds | Example |
+| --- | --- | --- |
+| `CustomerID` | Who bought. Any text or number that identifies the customer. | `17850` |
+| `InvoiceNo` | The order/invoice number. Several rows can share one invoice. Invoices starting with `C` are treated as cancellations. | `536365` |
+| `InvoiceDate` | When the sale happened. | `2010-12-01 08:26:00` |
+| `Quantity` | How many units were bought on that line. | `6` |
+| `UnitPrice` | Price of one unit (any currency, no symbol). | `2.55` |
+
+A minimal valid CSV looks like this:
+
+```csv
+CustomerID,InvoiceNo,InvoiceDate,Quantity,UnitPrice
+17850,536365,2010-12-01 08:26:00,6,2.55
+17850,536365,2010-12-01 08:26:00,8,3.39
+13047,536367,2010-12-01 08:34:00,24,1.69
+13047,C536379,2010-12-01 09:41:00,-1,27.50
+```
+
+Good to know:
+
+- **Extra columns are fine.** Product name, country, stock code and so on are kept but not used for grouping.
+- **Dates:** use `YYYY-MM-DD` or `YYYY-MM-DD HH:MM:SS`, or real date cells in Excel. For CSV dates like `31/12/2024`, enter the date format (for example `%d/%m/%Y`) in **Optional date format** on the Analyze page.
+- **Rows that are skipped automatically**, not errors: empty `CustomerID`, cancellations (`InvoiceNo` starting with `C`), quantity or price of 0 or less, and exact duplicate rows.
+- **Rows that stop the analysis** with an error that names the row: a missing `InvoiceNo`, a date that can't be read, or text in `Quantity`/`UnitPrice`. Fix those rows and upload again.
+- **CSV files** must be saved as UTF-8 with commas between values. **Excel files** are read from the first sheet, with the column names in the first row.
+- **Leading zeros** in customer IDs (like `00123`) are kept only if the column is stored as text.
+- **Size:** up to 64 MiB per file, roughly 1.2 million CSV rows. You need at least as many distinct customers as the number of groups you ask for.
+
+The bundled `Online Retail.xlsx` already has this layout and is a good reference.
+
+Duplicate column names are rejected, and values are never guessed or filled in. K is bounded by usable customers and distinct feature vectors, and the API supports at most 10 candidate values per request.
 
 Results stay in memory while navigating and reset on a full refresh. Changing analysis settings clears the previous result. Cancelling the browser wait does not stop server computation.
 
@@ -146,7 +172,7 @@ The repository retains the original **Online Retail.xlsx**, a public dataset by 
 
 See [DATASET.md](#dataset-reference) for provenance, attribution and deployment provisioning. If the workbook is missing from your checkout, download the official dataset and place the extracted workbook at the repository root. Private uploads and exports belong outside Git and static hosting.
 
-Dataset licensing is separate from Segmentra source code. No source-code license has been selected; this README does not grant an open-source license. Sora's license and font source are retained in [frontend/public/fonts](frontend/public/fonts).
+Dataset licensing is separate from Segmentra source code. Segmentra source code is released under the [MIT License](LICENSE). Sora's license and font source are retained in [frontend/public/fonts](frontend/public/fonts).
 
 ## Frontend configuration
 
@@ -195,11 +221,25 @@ npm run build
 npm test -- src/test/csv-security.test.ts
 ```
 
+### Performance
+
+Measured through the real HTTP API on a 16-core Windows laptop (Python 3.12, one worker, `OMP_NUM_THREADS=1`), K=4 with candidates 2–6:
+
+| Input | File size | Customers | Before | After |
+| --- | --- | --- | --- | --- |
+| Online Retail example (XLSX, 541,909 rows) | 23 MiB | 4,338 | 81 s | **11 s** |
+| Synthetic CSV, 100,000 rows | 5 MiB | 5,000 | 3.5 s | **0.9 s** |
+| Synthetic CSV, 500,000 rows | 27 MiB | 20,000 | 16 s | **4.4 s** |
+| Synthetic CSV, 1,000,000 rows | 53 MiB | 50,000 | 36 s | **10 s** |
+| Synthetic CSV, 1,300,000 rows | 69 MiB | – | rejected (413) | rejected (413) |
+
+"Before" read XLSX with openpyxl and validated every row twice; "after" reads XLSX with python-calamine, validates once and vectorizes CSV validation. Results on the example are identical. Peak extra memory is about 370 MiB for the 1M-row CSV and 600 MiB for the example workbook. The 64 MiB upload limit (roughly 1.2 million CSV rows) is the practical ceiling.
+
 Historical test results are not a substitute for rerunning the checks before deployment. The tests cover RFM semantics, cleaning, clustering, API validation, upload cleanup, prohibited XML, CORS, CSV security, frontend state, navigation and scene lifecycle behavior.
 
 ## Security and limitations
 
-- XLSX uploads use active XML protection, archive checks and size budgets. CSV exports visibly prefix formula-like text with `[text] `; raw API/explorer identifiers stay unchanged. Import ordinary leading-zero IDs as text. See [export policy](#security-reference).
+- XLSX uploads are rejected if any XML part declares a DTD or entity, and pass archive checks and size budgets. CSV exports visibly prefix formula-like text with `[text] `; raw API/explorer identifiers stay unchanged. Import ordinary leading-zero IDs as text. See [export policy](#security-reference).
 - Data quality, outliers and preprocessing affect clusters. Silhouette measures separation, not business usefulness; scores across different preprocessing spaces are not directly comparable.
 - Large workbooks require significant CPU time and memory. Upload/ZIP budgets are not complete memory or computation-time bounds. One analysis is admitted per process by default.
 - Personas describe retained purchases. No authentication, database, saved server-side analyses or background job queue is implemented.
@@ -389,7 +429,7 @@ This is a synchronous local service: the HTTP request waits for analysis. There 
 
 ### Upload security
 
-See [deployment requirements](#deployment-reference) for production origin/routing/startup requirements and [dataset notice](#dataset-reference) for example attribution. XLSX parsing requires active `defusedxml==0.7.1`; startup fails closed without it. Prohibited XML entities/external references return HTTP 400 `invalid_workbook`, stage `ingestion`, using the existing error envelope and a generic safe message. Other ingestion validation errors retain their documented codes/statuses. Archive duplicate names are rejected; file, request, member and expanded-size budgets remain unchanged.
+See [deployment requirements](#deployment-reference) for production origin/routing/startup requirements and [dataset notice](#dataset-reference) for example attribution. Before parsing, every XML part of an uploaded workbook is scanned for `<!DOCTYPE`/`<!ENTITY` declarations (UTF-8 and UTF-16); any match returns HTTP 400 `invalid_workbook`, stage `ingestion`, using the existing error envelope and a generic safe message. Other ingestion validation errors retain their documented codes/statuses. Archive duplicate names are rejected; file, request, member and expanded-size budgets remain unchanged.
 
 
 ---
@@ -408,7 +448,7 @@ Policy reference: [OWASP CSV Injection](https://community.owasp.org/attacks/CSV_
 
 ### XLSX and HTTP ingestion
 
-`backend/services/analysis_service.py` verifies active openpyxl/defusedxml parsing and fails closed if protection is inactive. The declared dependency is `defusedxml==0.7.1`. Prohibited entity declarations/external references return HTTP 400 `invalid_workbook`, stage `ingestion`, in the existing safe error envelope. Classification walks explicit exception causes and checks actual `DefusedXmlException` types; unrelated validation errors retain their own handling.
+XLSX files are read with python-calamine, about 10× faster than openpyxl on the example workbook. Real workbooks never need a DTD, so `segmentation/ingestion.py` rejects any XML part that declares one before calamine sees the file; this rules out entity expansion and external references regardless of parser behavior. `backend/services/analysis_service.py` maps that `UnsafeWorkbookError` to HTTP 400 `invalid_workbook`, stage `ingestion`, with a generic safe message; corrupt archives map to the same code.
 
 File/content checks, encrypted/duplicate ZIP member rejection, declared expanded-size/member budgets, bounded streaming multipart requests and upload-handle cleanup remain enabled. Admission capacity is released after success or failure. See [API limits and error contract](#api-reference) for exact budgets/statuses. Budget checks do not bound all object memory or computation time.
 
@@ -427,7 +467,7 @@ Keep uploads, exports, dotenv values and local review archives out of Git and st
 
 ### Dataset provenance
 
-Source: [UCI Online Retail](https://archive.ics.uci.edu/dataset/352/online+retail). Citation: Chen, D. (2015). Online Retail. UCI Machine Learning Repository. https://doi.org/10.24432/C5BW33. UCI licenses the dataset under [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/). Retain attribution, a license link, and describe modifications when redistributing. Segmentra analysis derives cleaned purchase-only RFM profiles; the bundled workbook itself is unmodified. This notice does not choose a license for Segmentra source code.
+Source: [UCI Online Retail](https://archive.ics.uci.edu/dataset/352/online+retail). Citation: Chen, D. (2015). Online Retail. UCI Machine Learning Repository. https://doi.org/10.24432/C5BW33. UCI licenses the dataset under [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/). Retain attribution, a license link, and describe modifications when redistributing. Segmentra analysis derives cleaned purchase-only RFM profiles; the bundled workbook itself is unmodified. Segmentra source code itself is MIT-licensed; see [LICENSE](LICENSE).
 
 The local workbook was compared against the workbook extracted from UCI's official download. Both contain 23,715,344 bytes with SHA-256 `43465a06f2ccf7c8b5bd2892bc7defb52f97487934fe93b16ae4c3936424676d`; they are byte-identical. Redistribution provenance is verified, rather than inferred from a filename.
 
@@ -452,7 +492,7 @@ Copy the example files only to local ignored `.env` files. Vite loads its enviro
 - Separate HTTPS hosts: build with `VITE_API_BASE_URL=https://api.example.com` and configure `SEGMENTIQ_CORS_ORIGINS=https://app.example.com` using the actual explicit frontend origin. CORS denies other browser origins; it is not authentication or an abuse prevention control.
 - `API_PROXY_TARGET=http://127.0.0.1:8000` is a development/preview proxy setting, not a production browser origin. Local default CORS allows only localhost/127.0.0.1 port 5173. HTTP is accepted only on loopback; public origins require HTTPS, with no paths, credentials or wildcards.
 
-From repository root, launch local development using `python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000 --workers 1`. For a container/private service interface use `--host 0.0.0.0 --port <host-assigned-port> --workers 1` behind HTTPS ingress. Host/port are explicit Uvicorn arguments; do not assume backend dotenv contains them. Configure `OMP_NUM_THREADS=1`, `OPENBLAS_NUM_THREADS=1`, `MKL_NUM_THREADS=1` **before** launching Python. Health: `curl --fail http://127.0.0.1:8000/api/health`. Server startup fails closed if openpyxl XML protection is inactive; restart after dependency installation.
+From repository root, launch local development using `python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000 --workers 1`. For a container/private service interface use `--host 0.0.0.0 --port <host-assigned-port> --workers 1` behind HTTPS ingress. Host/port are explicit Uvicorn arguments; do not assume backend dotenv contains them. Configure `OMP_NUM_THREADS=1`, `OPENBLAS_NUM_THREADS=1`, `MKL_NUM_THREADS=1` **before** launching Python. Health: `curl --fail http://127.0.0.1:8000/api/health`.
 
 Serve only `frontend/dist` as static content. Configure history fallback to `index.html` for `/analyze`, `/segments`, `/insights`, `/methodology`, `/about` and other client routes. Exclude `/api/*` and missing static assets from that fallback. Vite preview validates the built app locally but is not a production server.
 
@@ -466,7 +506,7 @@ Historical Phase 5A example: approximately 88.28 s, 482 MiB sampled resident mem
 
 ### Required gates before hosting
 
-1. Review the intended deployment files and scan for secrets. Preserve dataset/font notices; exclude private uploads, exports and local archives. Source-code licensing remains an owner decision; it is separate from the verified dataset license.
+1. Review the intended deployment files and scan for secrets. Preserve dataset/font notices; exclude private uploads, exports and local archives. Source code is MIT-licensed; that is separate from the dataset's CC BY 4.0 license.
 2. Reproduce installation, tests and build on the target OS; review current runtime advisories and installer advisories separately.
 3. Select a host with demonstrated memory/CPU/temporary-disk headroom; configure HTTPS, exact origins, SPA/API routing and ingestion/abuse limits.
 4. Stage-test example, upload limits, invalid XML, busy responses, health responsiveness, disconnect behavior and deep-link refresh through the actual ingress.

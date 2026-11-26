@@ -74,6 +74,14 @@ describe('customer display and exports', () => {
     expect(histogram([2, 2])).toEqual([{ label: '2', value: 2 }]);
     expect(histogram([])).toEqual([]);
   });
+  it('can collect extreme values in a final overflow bin', () => {
+    const values = [...Array.from({ length: 99 }, (_, i) => i), 10_000];
+    const bins = histogram(values, 10, .95);
+    expect(bins.reduce((sum, b) => sum + b.value, 0)).toBe(100);
+    expect(bins.at(-1)!.label).toMatch(/^Over /);
+    expect(bins.at(-1)!.value).toBeLessThanOrEqual(6);
+    expect(bins[0].value).toBeLessThan(20);
+  });
   it('formats null safely and labels dates in UTC without a currency assumption', () => {
     expect(formatNumber(null)).toBe('Unavailable'); expect(formatScore(undefined)).toBe('Unavailable');
     expect(formatNumber(12.5)).toBe('12.5'); expect(formatDate('2011-12-10T12:50:00')).toContain('UTC');

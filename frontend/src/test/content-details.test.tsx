@@ -37,24 +37,20 @@ describe('concise content with accessible analytical details', () => {
     expect(screen.getByText(/pseudonymous IDs do not guarantee anonymity/)).toBeVisible();
     expect(screen.getByText(/CSV exports prefix formula-like text/)).toBeVisible();
   });
-  it('retains the full API persona description behind its summary without modifying results', async () => {
-    const user = userEvent.setup(); const before = structuredClone(result.segments);
+  it('shows the full API persona description without modifying results', () => {
+    const before = structuredClone(result.segments);
     render(<ClusterDetails segments={result.segments} />);
-    await user.click(screen.getByText('How this profile is described'));
     expect(screen.getByText(result.segments[0].persona_description!)).toBeVisible();
     expect(result.segments).toEqual(before);
     expect(screen.getByRole('button', { name: 'Export segments CSV' })).toBeEnabled();
   });
-  it('keeps real model explanations, sampling caveats and safe-export guidance available', async () => {
+  it('keeps real model explanations and sampling caveats available', async () => {
     const user = userEvent.setup();
     const state: AnalysisState = { config: DEFAULT_CONFIG, result, status: 'success', error: null, invalidated: false, elapsed: 0, updateConfig: vi.fn(), run: vi.fn(), cancel: vi.fn() };
     render(<MemoryRouter><AnalysisContext.Provider value={state}><Insights /></AnalysisContext.Provider></MemoryRouter>);
     await user.click(screen.getByText('How model quality is measured'));
     expect(screen.getByText(result.model_quality.recommendation_explanation)).toBeVisible();
-    expect(screen.getByText(/Small clusters may be absent/)).toBeVisible();
-    await user.click(screen.getByText('How to read the PCA plot'));
-    expect(screen.getByText(/not a prediction or the clustering input/)).toBeVisible();
-    expect(screen.getByText(/Formula-like text gets/)).toHaveTextContent('[text]');
+    expect(screen.getByText(/very small clusters may be missed/)).toBeVisible();
     expect(screen.getByRole('button', { name: 'Export all customers CSV' })).toBeEnabled();
   });
 });

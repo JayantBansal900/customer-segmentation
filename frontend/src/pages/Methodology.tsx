@@ -1,24 +1,88 @@
 import { Link } from 'react-router-dom';
 import { TechnicalDetails } from '../components/ui/TechnicalDetails';
+import '../styles/story-pages.css';
 
 const steps = [
-  ['Upload Data', 'Use CSV, XLSX, or the retail example. Five transaction columns are required.'],
-  ['Clean Transactions', 'Validate the records and keep eligible purchases. Returns and duplicates are excluded.'],
-  ['Calculate RFM', 'Summarize how recently, how often, and how much each customer buys.'],
-  ['Prepare Features', 'Scale RFM values, with an optional log transform to reduce skew.'],
-  ['Cluster Customers', 'Group similar customers with KMeans. Compare candidate K values without changing your chosen K.'],
-  ['Explore Results', 'Compare profiles, view patterns in 2D, and inspect or export customer records.'],
+  ['Upload Data', 'CSV, Excel or the example.'],
+  ['Clean Transactions', 'Drop returns and duplicates.'],
+  ['Calculate RFM', 'Three numbers per customer.'],
+  ['Prepare Features', 'Put them on one scale.'],
+  ['Cluster Customers', 'KMeans finds the groups.'],
+  ['Explore Results', 'Compare, search, export.'],
+];
+
+// A small made-up customer, so every number on this page can be checked by hand.
+const LEDGER = [
+  { invoice: '1001', date: '2 Mar', qty: 6, price: '2.50', total: '15.00' },
+  { invoice: '1001', date: '2 Mar', qty: 2, price: '12.00', total: '24.00' },
+  { invoice: 'C1002', date: '9 Mar', qty: -2, price: '12.00', total: '−24.00', removed: 'Return' },
+  { invoice: '1040', date: '18 May', qty: 10, price: '1.20', total: '12.00' },
+  { invoice: '1088', date: '27 Jun', qty: 4, price: '7.50', total: '30.00' },
 ];
 
 export function Methodology() {
-  return <article className="product-page methodology-page"><header className="product-heading"><p className="section-kicker">How it works</p><h1>From transactions <em>to intelligence.</em></h1><p>Six steps from purchase records to customer groups.</p></header>
-    <section aria-labelledby="pipeline-title"><div className="section-top"><h2 id="pipeline-title">The analysis, step by step</h2><span className="quiet-tag">Unsupervised machine learning</span></div><ol className="process-map pipeline-six" aria-label="Implemented segmentation pipeline">{steps.map(([title, description], i) => <li key={title}><span className="process-number">{String(i+1).padStart(2,'0')} →</span><h3>{title}</h3><p>{description}</p></li>)}</ol></section>
-    <section className="editorial-split"><div><p className="section-kicker">Start with reliable data</p><h2>Keep valid purchases.</h2></div><div><p>The server validates your records before cleaning. Purchase value excludes returns; no currency is inferred.</p><TechnicalDetails summary="Data requirements and cleaning rules"><p>UTF-8 CSV or the first XLSX sheet must include CustomerID, InvoiceNo, InvoiceDate, Quantity and UnitPrice. Invalid values are rejected, not imputed. Text IDs retain leading zeros; numeric Excel formatting cannot restore missing zeros.</p><p>Non-ISO string dates need an explicit format. Naive timestamps are treated as UTC; dates are normalized to UTC.</p><p>Cleaning removes missing customer IDs, invoices beginning with uppercase C, nonpositive quantities, nonpositive prices and exact duplicate source rows, in that order. Counts are sequential and non-overlapping; duplicates use all source columns.</p><p>Retained line value is Quantity × UnitPrice. Monetary is purchase-only value, not net revenue after returns.</p></TechnicalDetails></div></section>
-    <section aria-labelledby="rfm-method-title"><p className="section-kicker">Three purchase signals</p><h2 id="rfm-method-title">What RFM measures</h2><div className="rfm-definitions"><div><span className="rfm-letter">R</span><h3>Recency</h3><p>Whole days since the latest retained purchase.</p></div><div><span className="rfm-letter">F</span><h3>Frequency</h3><p>Distinct retained purchase invoices per customer.</p></div><div><span className="rfm-letter">M</span><h3>Monetary</h3><p>Total retained purchase value per customer.</p></div></div><p className="technical-note">Recency uses the dataset’s history, not today’s date.</p><TechnicalDetails summary="RFM formulas and reference date"><p>The reference timestamp is one day after the latest retained transaction in the dataset.</p><code className="formula">(reference timestamp − latest purchase).days</code><code className="formula">count distinct InvoiceNo per CustomerID</code><code className="formula">sum(Quantity × UnitPrice) per CustomerID</code><p>Lower recency means a more recent purchase. Frequency counts invoices, not line items; monetary excludes returns.</p></TechnicalDetails></section>
-    <section className="editorial-split"><div><p className="section-kicker">Compare like with like</p><h2>Prepare the RFM values.</h2><p>Scaling makes the three features comparable.</p></div><div className="representation-options"><section><h3>Original RFM scaling</h3><p>Scale the raw RFM values.</p></section><section><h3>Log-transformed RFM scaling</h3><p>Reduce skew with log1p, then scale.</p></section><TechnicalDetails summary="Preprocessing details"><p>raw_standard applies StandardScaler to raw RFM. log1p_standard applies log1p to nonnegative RFM, followed by StandardScaler.</p><p>The choice changes model distances; neither is always better. Profiles, distributions and exports keep raw business values.</p></TechnicalDetails></div></section>
-    <section className="editorial-split"><div><p className="section-kicker">Find similar behavior</p><h2>Choose your customer groups.</h2></div><div><p>KMeans groups customers using the three prepared RFM features. K is the number of groups you choose.</p><TechnicalDetails summary="KMeans and candidate evaluation"><p>K must fit both usable customers and distinct feature vectors. The engine evaluates candidate models first and reuses a fitted candidate for selected K when available.</p><code className="formula">k-means++ · random_state 42 · n_init 10</code><p>Inertia sums squared distances within clusters. Lower is tighter, but it generally falls as K grows. Cluster numbers are labels, not rankings or stable personas across runs.</p><p>Silhouette measures cohesion and separation. Higher valid scores guide recommended K; ties favor smaller K. If no score is valid, no K is recommended. Your selected K remains unchanged.</p><p>At most 1,000 customers are sampled uniformly with seed 42, using the same subset for every candidate. Small clusters can be missed. A valid score needs 2 through N−1 labels; scores across preprocessing modes are not directly comparable.</p></TechnicalDetails></div></section>
-    <section className="editorial-split"><div><p className="section-kicker">Understand the result</p><h2>Explore patterns, with context.</h2></div><div><p>PCA offers a two-dimensional view. Profiles and personas describe past purchases, not future outcomes.</p><TechnicalDetails summary="PCA, profiles and model limits"><p>PCA projects the same prepared RFM representation; clustering uses RFM, not PCA coordinates. Explained variance measures the variation each component captures. Some distances are lost; degenerate data can make metrics unavailable.</p><p>Profiles show customer counts, population shares, purchase-value shares and raw mean/median RFM. Personas compare cluster medians with overall customer medians; they do not predict churn or future revenue.</p><p>Input quality, preprocessing and K can change the groups. A uniform silhouette sample can omit small clusters. Interpret results alongside the source purchase history.</p></TechnicalDetails></div></section>
-    <section className="panel"><p className="section-kicker">Verified technology</p><h2>The stack behind the analysis</h2><div className="foundations"><span>React + TypeScript</span><span>Vite + React Router</span><span>FastAPI + Python</span><span>pandas + NumPy</span><span>scikit-learn</span><span>openpyxl + defusedxml</span></div><TechnicalDetails summary="Results, privacy and exports"><p>The frontend displays real typed API results. Results stay in browser memory while navigating; reloading clears results and selected files. There are no accounts, database or background jobs.</p><p>Stopping the browser wait does not stop server computation. CSV exports prefix formula-like text with [text]; IDs remain unchanged in results. Import IDs as text to keep leading zeros.</p><p>Use data you are authorized to analyze. Customer identifiers and purchase history can be sensitive; pseudonymous IDs do not guarantee anonymity.</p></TechnicalDetails></section>
-    <section className="closing-cta"><div><h2>Try the method on your data.</h2><p>Use the example or upload transactions.</p></div><Link className="button" to="/analyze">Start Analyzing <span aria-hidden="true">↗</span></Link></section>
+  return <article className="product-page story-page methodology-page">
+    <header className="method-hero">
+      <h1>How Segmentra groups your customers</h1>
+      <p className="story-lead">Six steps turn a list of sales into customer groups. Here is the whole idea, followed through one customer.</p>
+    </header>
+
+    <ol className="step-rail" aria-label="Implemented segmentation pipeline">{steps.map(([title, description], i) => <li key={title}><span className="step-number" aria-hidden="true">{i + 1}</span><h3>{title}</h3><p>{description}</p></li>)}</ol>
+
+    <section className="trace" aria-labelledby="trace-title">
+      <h2 id="trace-title">Follow one customer</h2>
+      <p className="trace-intro">Customer 1042 bought from a shop whose data ends on 30 June.</p>
+      <div className="trace-flow">
+        <div className="trace-stage">
+          <h3>Their transactions</h3>
+          <div className="table-scroll"><table className="ledger"><caption className="sr-only">Transactions for example customer 1042</caption><thead><tr><th scope="col">Invoice</th><th scope="col">Date</th><th scope="col">Qty × price</th><th scope="col">Value</th></tr></thead>
+            <tbody>{LEDGER.map((row, i) => <tr key={i} className={row.removed ? 'ledger-removed' : ''}><th scope="row">{row.invoice}</th><td>{row.date}</td><td>{row.qty} × {row.price}</td><td>{row.total}{row.removed && <span className="removed-tag">{row.removed}, removed</span>}</td></tr>)}</tbody></table></div>
+        </div>
+        <span className="trace-arrow" aria-hidden="true" />
+        <div className="trace-stage">
+          <h3>Their RFM profile</h3>
+          <dl className="rfm-trio">
+            <div className="rfm-r"><dt>Recency</dt><dd>4 <small>days</small></dd><p>Last bought 27 June. The clock starts on 1 July, a day after the data ends.</p></div>
+            <div className="rfm-f"><dt>Frequency</dt><dd>3 <small>orders</small></dd><p>Invoices 1001, 1040 and 1088. Two lines on one invoice count once.</p></div>
+            <div className="rfm-m"><dt>Monetary</dt><dd>81.00</dd><p>15 + 24 + 12 + 30. The return is not subtracted.</p></div>
+          </dl>
+        </div>
+        <span className="trace-arrow" aria-hidden="true" />
+        <div className="trace-stage trace-result">
+          <h3>Their group</h3>
+          <p className="group-badge"><span aria-hidden="true" />Recent, frequent, low spend</p>
+          <p>KMeans compares these three numbers with every other customer and puts 1042 with the customers closest to them.</p>
+        </div>
+      </div>
+    </section>
+
+    <section className="story-row" aria-labelledby="k-title">
+      <h2 id="k-title">How many groups?</h2>
+      <div className="story-copy">
+        <p>You pick K, the number of groups. Segmentra also tries every K in your range and recommends the one whose groups are most clearly separated. Your choice is never overridden.</p>
+        <p>Pick <strong>log-transformed scaling</strong> when a few big spenders would otherwise get a group of their own.</p>
+      </div>
+    </section>
+
+    <section className="story-row" aria-labelledby="limits-title">
+      <h2 id="limits-title">Keep in mind</h2>
+      <ul className="plain-list">
+        <li>Groups describe past purchases. They don't predict churn or future revenue.</li>
+        <li>Spending counts purchases only, with no currency assumed.</li>
+        <li>Your data lives in the browser tab and is gone when you reload.</li>
+      </ul>
+    </section>
+
+    <section className="story-row details-row" aria-labelledby="details-title">
+      <h2 id="details-title">Exact rules</h2>
+      <div>
+        <TechnicalDetails summary="Data requirements and cleaning rules"><p>A UTF-8 CSV or the first sheet of an XLSX file must include CustomerID, InvoiceNo, InvoiceDate, Quantity and UnitPrice. Invalid values are rejected, not guessed. Non-ISO CSV dates need an explicit date format; timestamps are treated as UTC.</p><p>Rows are removed in this order: missing customer ID, invoice starting with “C” (cancellation), quantity ≤ 0, price ≤ 0, exact duplicate row. Each row is counted once, at the first rule it fails.</p></TechnicalDetails>
+        <TechnicalDetails summary="RFM formulas and reference date"><p>The reference timestamp is one day after the latest retained transaction in the dataset.</p><code className="formula">(reference timestamp − latest purchase).days</code><code className="formula">count distinct InvoiceNo per CustomerID</code><code className="formula">sum(Quantity × UnitPrice) per CustomerID</code></TechnicalDetails>
+        <TechnicalDetails summary="KMeans and candidate evaluation"><p>Features are scaled with StandardScaler, optionally after log1p. KMeans uses <code>k-means++ · random_state 42 · n_init 10</code>, so the same input always gives the same groups.</p><p>Silhouette is computed on at most 1,000 customers sampled with seed 42, using the same subset for every candidate. Ties go to the smaller K. Inertia usually falls as K grows, so it is shown but not used to recommend K.</p><p>PCA squeezes the three scaled features into two dimensions for the scatter plot only; clustering uses the full features.</p></TechnicalDetails>
+        <TechnicalDetails summary="Results, privacy and exports"><p>CSV exports prefix formula-like text with [text] so spreadsheets don't run it; results on screen stay unchanged. Import IDs as text to keep leading zeros. Stopping the wait in the browser does not stop a running server analysis.</p><p>Customer IDs and purchase history can be sensitive; pseudonymous IDs do not guarantee anonymity. Only analyze data you are allowed to use.</p></TechnicalDetails>
+      </div>
+    </section>
+
+    <section className="story-cta"><h2>Try it on your own data.</h2><Link className="button" to="/analyze">Start Analyzing</Link></section>
   </article>;
 }

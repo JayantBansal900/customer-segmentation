@@ -7,6 +7,19 @@ from .preprocessing import raw_features
 from .profiling import profile_clusters
 
 
+def _number(value: float) -> str:
+    return f"{value:,.0f}" if float(value).is_integer() else f"{value:,.2f}"
+
+
+def _describe(values: tuple[float, float, float], typical: tuple[float, float, float]) -> str:
+    """Plain-language summary of a cluster's median customer."""
+    (recency, frequency, monetary), (typical_r, typical_f, typical_m) = values, typical
+    orders = "order" if frequency == 1 else "orders"
+    return (f"A typical customer in this group last bought {round(recency):,} days before the dataset ended "
+            f"(overall: {round(typical_r):,}), placed {_number(frequency)} {orders} (overall: {_number(typical_f)}) "
+            f"and spent {_number(monetary)} in total (overall: {_number(typical_m)}).")
+
+
 def interpret_personas(customers: pd.DataFrame) -> pd.DataFrame:
     """Describe cluster medians relative to overall customer medians.
 
@@ -28,5 +41,5 @@ def interpret_personas(customers: pd.DataFrame) -> pd.DataFrame:
                 ("Less recent", "Higher invoice frequency", "Higher purchase value")):
             terms.append(equal if np.isclose(value, threshold) else lower if value < threshold else higher)
         records.append({"Cluster": row.Cluster, "Persona": ", ".join(terms),
-            "Description": f"Cluster median R/F/M = {values}; overall customer medians = {thresholds}. Describes retained purchases only; no churn or revenue prediction."})
+            "Description": _describe(values, thresholds)})
     return pd.DataFrame(records)

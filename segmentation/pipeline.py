@@ -1,3 +1,4 @@
+
 """One independent analysis run; no UI, HTTP services, or automatic file writes."""
 
 from dataclasses import asdict, dataclass
@@ -8,10 +9,21 @@ import pandas as pd
 from sklearn.cluster import KMeans
 
 from .cleaning import CleaningReport, clean_transactions
-from .clustering import CandidateScore, EvaluationResult, evaluate_candidates, fit_kmeans, score_model, validate_k
-from .ingestion import Source, load_transactions, normalize_transactions
+from .clustering import (
+    CandidateScore,
+    EvaluationResult,
+    evaluate_candidates,
+    fit_kmeans,
+    score_model,
+    validate_k,
+)
+from .ingestion import Source, load_transactions
 from .personas import interpret_personas
-from .preprocessing import FeatureRepresentation, PreprocessingMode, fit_preprocessing
+from .preprocessing import (
+    FeatureRepresentation,
+    PreprocessingMode,
+    fit_preprocessing,
+)
 from .profiling import profile_clusters
 from .projection import PCAResult, project_pca
 from .rfm import compute_rfm
@@ -45,44 +57,129 @@ class PipelineResult:
     metadata: dict
 
 
-def run_pipeline(source: Source | pd.DataFrame, config: PipelineConfig | None = None) -> PipelineResult:
+def run_pipeline(
+    source: Source | pd.DataFrame,
+    config: PipelineConfig | None = None,
+    *,
+    normalized: bool = False,
+) -> PipelineResult:
     """Analyze CSV/XLSX or a DataFrame while preserving the original inputs.
 
-    Invalid selected K is a structured error. Invalid evaluation candidates are
-    explanatory records. Neither a recommended K nor fallback data replaces the
-    user's selected K. Fitted candidate models can be reused for the selection.
+    Invalid selected K is a structured error. Invalid evaluation candidates
+    are explanatory records. Neither a recommended K nor fallback data
+    replaces the user's selected K. Fitted candidate models can be reused
+    for the selection. Pass normalized=True for a DataFrame that already came
+    from load_transactions(), so validation runs exactly once.
     """
     started = perf_counter()
     config = config or PipelineConfig()
-    loaded = normalize_transactions(source, date_format=config.date_format) if isinstance(source, pd.DataFrame) else load_transactions(source, date_format=config.date_format)
-    cleaned, report = clean_transactions(loaded)
+
+    # Transactions are validated exactly once: by load_transactions() for
+    # files, or by clean_transactions() for DataFrames not yet normalized.
+    if isinstance(source, pd.DataFrame):
+        cleaned, report = clean_transactions(source, normalized=normalized, date_format=config.date_format)
+    else:
+        loaded = load_transactions(source, date_format=config.date_format)
+        cleaned, report = clean_transactions(loaded, normalized=True)
+
     rfm = compute_rfm(cleaned)
-    representation = fit_preprocessing(rfm.customers, config.preprocessing)
+
+    representation = fit_preprocessing(
+        rfm.customers,
+        config.preprocessing,
+    )
+
     matrix = representation.matrix
+
     validate_k(matrix, config.selected_k)
-    evaluation = evaluate_candidates(matrix, config.candidate_ks, sample_size=config.silhouette_sample_size)
+
+    evaluation = evaluate_candidates(
+        matrix,
+        config.candidate_ks,
+        sample_size=config.silhouette_sample_size,
+    )
+
     model = evaluation.models.get(config.selected_k)
+
     if model is None:
         model = fit_kmeans(matrix, config.selected_k)
-    selected_metrics = next((s for s in evaluation.candidates if s.k == config.selected_k), None)
+
+    selected_metrics = next(
+        (
+            score
+            for score in evaluation.candidates
+            if score.k == config.selected_k
+        ),
+        None,
+    )
+
     if selected_metrics is None:
-        selected_metrics = score_model(matrix, model, sample_size=config.silhouette_sample_size)
+        selected_metrics = score_model(
+            matrix,
+            model,
+            sample_size=config.silhouette_sample_size,
+        )
+
     pca = project_pca(matrix)
+
     customers = rfm.customers.copy(deep=True)
     customers["Cluster"] = model.labels_
     customers[["PC1", "PC2"]] = pca.coordinates
+
     profiles = profile_clusters(customers)
     personas = interpret_personas(customers)
+
     metadata = {
-        "config": asdict(config), "reference_timestamp": rfm.reference_timestamp.isoformat(),
-        "input_rows": report.input_rows, "cleaned_rows": report.cleaned_rows,
-        "customer_count": len(customers), "total_monetary": float(customers.Monetary.sum()),
-        "selected_k": config.selected_k, "recommended_k": evaluation.recommended_k,
-        "kmeans": {"init": "k-means++", "random_state": 42, "n_init": 10},
-        "silhouette_sampling": {"strategy": "uniform without replacement; same subset for every K", "seed": 42, "maximum_customers": config.silhouette_sample_size},
-        "purchase_policy": "Positive retained purchases; excludes returns and is not true net revenue.",
-        "timestamp_policy": "UTC-normalized naive timestamps; naive source timestamps treated as UTC.",
-        "versions": {name: version(name) for name in ("numpy", "pandas", "scikit-learn", "openpyxl")},
+        "config": asdict(config),
+        "reference_timestamp": rfm.reference_timestamp.isoformat(),
+        "input_rows": report.input_rows,
+        "cleaned_rows": report.cleaned_rows,
+        "customer_count": len(customers),
+        "total_monetary": float(customers.Monetary.sum()),
+        "selected_k": config.selected_k,
+        "recommended_k": evaluation.recommended_k,
+        "kmeans": {
+            "init": "k-means++",
+            "random_state": 42,
+            "n_init": 10,
+        },
+        "silhouette_sampling": {
+            "strategy": (
+                "uniform without replacement; same subset for every K"
+            ),
+            "seed": 42,
+            "maximum_customers": config.silhouette_sample_size,
+        },
+        "purchase_policy": (
+            "Positive retained purchases; excludes returns "
+            "and is not true net revenue."
+        ),
+        "timestamp_policy": (
+            "UTC-normalized naive timestamps; "
+            "naive source timestamps treated as UTC."
+        ),
+        "versions": {
+            name: version(name)
+            for name in (
+                "numpy",
+                "pandas",
+                "scikit-learn",
+                "python-calamine",
+            )
+        },
         "elapsed_seconds": perf_counter() - started,
     }
-    return PipelineResult(customers, profiles, personas, report, rfm.reference_timestamp, representation, model, pca, evaluation, selected_metrics, metadata)
+
+    return PipelineResult(
+        customers,
+        profiles,
+        personas,
+        report,
+        rfm.reference_timestamp,
+        representation,
+        model,
+        pca,
+        evaluation,
+        selected_metrics,
+        metadata,
+    )

@@ -1,4 +1,3 @@
-import { TechnicalDetails } from '../ui/TechnicalDetails';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Customer } from '../../types/analysis';
 import { formatNumber } from '../../utils/format';
@@ -47,13 +46,13 @@ export function PCAProjection({ customers }: { customers: Customer[] }) {
     window.addEventListener('resize',draw);document.fonts?.ready.then(()=>{if(element.isConnected)draw();});
     return()=>{observer?.disconnect();window.removeEventListener('resize',draw);hitPoints.current=[];};
   },[available,bounds,hidden,inspected]);
-  return <figure className="panel pca-panel"><figcaption>Two-dimensional PCA projection</figcaption><p className="help">Explore customer patterns in two dimensions.</p>
+  return <figure className="panel pca-panel"><figcaption>Two-dimensional PCA projection</figcaption><p className="help">Each dot is a customer. Nearby dots have similar buying habits.</p>
     {available.length ? <><div className="pca-stage"><canvas ref={canvas} width={900} height={400} className="pca-canvas" role="img" aria-label={`PCA projection of ${available.length} customers, colored by cluster. Exact PC coordinates are included in customer CSV exports.`}
       onPointerMove={event=>{const rect=event.currentTarget.getBoundingClientRect(),px=event.clientX-rect.left,py=event.clientY-rect.top;let closest:null|Customer=null,distance=144;for(const p of hitPoints.current){const d=(p.x-px)**2+(p.y-py)**2;if(d<distance){distance=d;closest=p.customer;}}setHovered(closest);}}
       onPointerLeave={()=>setHovered(null)} /></div>
       <ul className="legend" aria-label="PCA cluster visibility">{clusters.map(cluster=><li key={cluster}><button type="button" aria-pressed={!hidden.includes(cluster)} onClick={()=>{setHidden(previous=>previous.includes(cluster)?previous.filter(id=>id!==cluster):[...previous,cluster]);setHovered(null);}}><span style={{backgroundColor:clusterColor(cluster)}} aria-hidden="true" />Cluster {cluster}</button></li>)}</ul>
       <label className="field pca-search">Inspect PCA customer ID<input value={lookup} placeholder="Exact Customer ID" onChange={e=>setLookup(e.target.value)} /></label>
       <div className="point-tooltip" role="status">{inspected ? <>Customer {inspected.customer_id} · Cluster {inspected.cluster_id}<br />PC1 {formatNumber(inspected.pc1)} · PC2 {formatNumber(inspected.pc2)}<br />R/F/M: {formatNumber(inspected.recency)} days · {formatNumber(inspected.frequency)} invoices · {formatNumber(inspected.monetary)} purchase value</> : lookup ? 'No visible customer has this exact ID. Check the ID or enable its cluster.' : 'Point details: hover or touch a plotted point, or enter an exact Customer ID.'}</div></> : <p>PCA coordinates are unavailable for this result.</p>}
-    <p className="help">{formatNumber(available.length)} customers plotted; {formatNumber(customers.length-available.length)} have unavailable coordinates.</p><TechnicalDetails summary="How to read the PCA plot"><p>Toggle clusters with the legend. Colors repeat after eight clusters; labels identify each group.</p><p>PCA is a 2D view, not a prediction or the clustering input. Some distances are lost in the projection.</p></TechnicalDetails>
+    <p className="help">{formatNumber(available.length)} customers plotted. Click a cluster in the legend to hide or show it.</p>
   </figure>;
 }

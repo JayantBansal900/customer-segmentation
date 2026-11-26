@@ -95,3 +95,12 @@ def test_original_four_customer_example_now_completes():
     assert scores[4].status == "unavailable"
     assert scores[5].status == scores[6].status == "invalid"
     assert result.evaluation.recommended_k in (2, 3)
+
+
+def test_prenormalized_frame_gives_same_result(transactions):
+    from segmentation.ingestion import normalize_transactions
+    config = PipelineConfig(selected_k=2, candidate_ks=(2, 3))
+    direct = run_pipeline(transactions, config)
+    once = run_pipeline(normalize_transactions(transactions), config, normalized=True)
+    pd.testing.assert_frame_equal(direct.customers, once.customers)
+    assert direct.cleaning_report == once.cleaning_report

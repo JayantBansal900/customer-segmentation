@@ -32,10 +32,10 @@ describe('bounded customer explorer', () => {
     render(<CustomerTable customers={customers} />); fireEvent.click(screen.getByRole('button', { name: 'Export filtered customers CSV' }));
     expect(create).toHaveBeenCalledWith(expect.any(Blob)); expect(click).toHaveBeenCalledOnce(); vi.advanceTimersByTime(1000); expect(revoke).toHaveBeenCalledWith('blob:test');
   });
-  it('shows selected segment raw mean/median without invented actions', async () => {
+  it('shows selected segment raw mean/median and its plain-language description', async () => {
     const user = userEvent.setup(); render(<ClusterDetails segments={fixture.segments as Segment[]} />);
     await user.selectOptions(screen.getByRole('combobox', { name: 'Selected cluster' }), String(fixture.segments[1].cluster_id));
     expect(screen.getByRole('table')).toHaveAccessibleName(`Raw RFM profile for cluster ${fixture.segments[1].cluster_id}`);
-    expect(screen.getByText(/No action recommendations returned/)).toBeInTheDocument();
+    expect(screen.getByText(fixture.segments[1].persona_description!)).toBeInTheDocument();
   });
 });

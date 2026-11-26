@@ -6,15 +6,47 @@ from io import StringIO
 from numbers import Integral, Real
 from pathlib import Path
 from typing import IO
-from zipfile import BadZipFile
+from zipfile import BadZipFile, ZipFile
 
 import numpy as np
 import pandas as pd
+from python_calamine import CalamineError
 
-from .errors import AnalysisValidationError, ValidationIssue, invalid
+from .errors import AnalysisValidationError, UnsafeWorkbookError, ValidationIssue, invalid
 
 REQUIRED_COLUMNS = ("CustomerID", "InvoiceNo", "InvoiceDate", "Quantity", "UnitPrice")
 Source = str | Path | IO[str] | IO[bytes]
+
+# Workbook XML never needs a DTD. Rejecting declarations before parsing rules
+# out entity expansion and external references whatever the XML parser does.
+_XML_PARTS = (".xml", ".rels", ".vml")
+_PROHIBITED = tuple(
+    marker.encode(encoding)
+    for marker in ("<!DOCTYPE", "<!ENTITY")
+    for encoding in ("utf-8", "utf-16-le", "utf-16-be")
+)
+_CHUNK = 1024 * 1024
+_OVERLAP = max(len(marker) for marker in _PROHIBITED)
+
+
+def reject_xml_declarations(source: str | Path | IO[bytes]) -> None:
+    """Raise UnsafeWorkbookError if any XML part of the archive declares a DTD."""
+    position = None if isinstance(source, (str, Path)) else source.tell()
+    try:
+        with ZipFile(source) as archive:
+            for member in archive.infolist():
+                if not member.filename.lower().endswith(_XML_PARTS):
+                    continue
+                with archive.open(member) as part:
+                    tail = b""
+                    while chunk := part.read(_CHUNK):
+                        window = tail + chunk
+                        if any(marker in window for marker in _PROHIBITED):
+                            raise UnsafeWorkbookError()
+                        tail = window[-_OVERLAP:]
+    finally:
+        if position is not None:
+            source.seek(position)
 
 
 def _check_csv_rows(handle: IO[str]) -> None:
@@ -69,6 +101,12 @@ def normalize_transactions(frame: pd.DataFrame, *, date_format: str | None = Non
     result = frame.copy(deep=True).reset_index(drop=True)
     issues: list[ValidationIssue] = []
     for name in ("CustomerID", "InvoiceNo"):
+        column = result[name]
+        if isinstance(column.dtype, pd.StringDtype) or pd.api.types.is_string_dtype(column.dtype) and column.dtype != object:
+            # Typed text column (CSV): same result as _identifier, without a Python loop.
+            stripped = column.astype("string").str.strip()
+            result[name] = stripped.mask(stripped == "", pd.NA)
+            continue
         normalized: list[object] = []
         bad: list[int] = []
         for position, value in enumerate(result[name]):
@@ -87,7 +125,12 @@ def normalize_transactions(frame: pd.DataFrame, *, date_format: str | None = Non
     for name in ("Quantity", "UnitPrice"):
         original = result[name]
         numeric = pd.to_numeric(original, errors="coerce")
-        boolean = original.map(lambda v: isinstance(v, (bool, np.bool_)))
+        if pd.api.types.is_bool_dtype(original.dtype):
+            boolean = pd.Series(True, index=original.index)
+        elif original.dtype == object:
+            boolean = original.map(lambda v: isinstance(v, (bool, np.bool_)))
+        else:
+            boolean = pd.Series(False, index=original.index)
         bad = ~np.isfinite(numeric.astype(float)) | boolean
         if bad.any():
             issues.append(ValidationIssue("invalid_numeric", f"{name} must contain finite numeric values.", name, tuple(int(i) + 2 for i in np.flatnonzero(bad)[:10])))
@@ -97,10 +140,15 @@ def normalize_transactions(frame: pd.DataFrame, *, date_format: str | None = Non
     if pd.api.types.is_datetime64_any_dtype(dates):
         parsed = pd.to_datetime(dates, errors="coerce", utc=True)
     else:
-        allowed = dates.map(lambda v: isinstance(v, (datetime, date, pd.Timestamp)) or isinstance(v, str))
+        if dates.dtype == object:
+            typed = dates.map(lambda v: isinstance(v, (datetime, date, pd.Timestamp)))
+            allowed = typed | dates.map(lambda v: isinstance(v, str))
+        else:
+            # Typed text column (CSV): every non-missing value is a string.
+            typed = pd.Series(False, index=dates.index)
+            allowed = dates.notna() & pd.api.types.is_string_dtype(dates.dtype)
         if date_format is None:
             iso = dates.astype("string").str.match(r"^\d{4}-\d{2}-\d{2}(?:$|[T ])", na=False)
-            typed = dates.map(lambda v: isinstance(v, (datetime, date, pd.Timestamp)))
             allowed = allowed & (iso | typed)
         parsed = pd.to_datetime(dates.where(allowed), format=date_format or "ISO8601", errors="coerce", utc=True)
     bad_dates = parsed.isna()
@@ -145,8 +193,10 @@ def load_transactions(source: Source, *, file_format: str | None = None, date_fo
                     source.seek(position)
             frame = pd.read_csv(source, dtype={"CustomerID": "string", "InvoiceNo": "string"}, keep_default_na=False, encoding="utf-8-sig")
         else:
+            reject_xml_declarations(source)
             # Header rows are data here, allowing duplicate-header validation.
-            raw = pd.read_excel(source, sheet_name=sheet_name, header=None, dtype=object, keep_default_na=False)
+            # calamine (Rust) reads large workbooks about 10x faster than openpyxl.
+            raw = pd.read_excel(source, sheet_name=sheet_name, header=None, dtype=object, keep_default_na=False, engine="calamine")
             if raw.empty:
                 raise invalid("empty_input", "The workbook sheet is empty.", stage="ingestion")
             frame = raw.iloc[1:].copy()
@@ -155,6 +205,6 @@ def load_transactions(source: Source, *, file_format: str | None = None, date_fo
         raise
     except pd.errors.EmptyDataError as exc:
         raise invalid("empty_input", "The file is empty.", stage="ingestion") from exc
-    except (OSError, ValueError, TypeError, UnicodeError, ImportError, BadZipFile, pd.errors.ParserError, csv.Error) as exc:
+    except (OSError, ValueError, TypeError, UnicodeError, ImportError, BadZipFile, CalamineError, pd.errors.ParserError, csv.Error) as exc:
         raise invalid("read_error", f"Cannot read {kind.upper()} input: {exc}", stage="ingestion") from exc
     return normalize_transactions(frame, date_format=date_format)
