@@ -17,7 +17,7 @@ from .clustering import (
     score_model,
     validate_k,
 )
-from .ingestion import Source, load_transactions, normalize_transactions
+from .ingestion import Source, load_transactions
 from .personas import interpret_personas
 from .preprocessing import (
     FeatureRepresentation,
@@ -60,33 +60,27 @@ class PipelineResult:
 def run_pipeline(
     source: Source | pd.DataFrame,
     config: PipelineConfig | None = None,
+    *,
+    normalized: bool = False,
 ) -> PipelineResult:
     """Analyze CSV/XLSX or a DataFrame while preserving the original inputs.
 
     Invalid selected K is a structured error. Invalid evaluation candidates
     are explanatory records. Neither a recommended K nor fallback data
     replaces the user's selected K. Fitted candidate models can be reused
-    for the selection.
+    for the selection. Pass normalized=True for a DataFrame that already came
+    from load_transactions(), so validation runs exactly once.
     """
     started = perf_counter()
     config = config or PipelineConfig()
 
-    # Avoid redundant normalization for DataFrame inputs using default dates.
-    # clean_transactions() independently validates and normalizes the data.
-    # Explicit custom date formats still require normalization here.
+    # Transactions are validated exactly once: by load_transactions() for
+    # files, or by clean_transactions() for DataFrames not yet normalized.
     if isinstance(source, pd.DataFrame):
-        loaded = (
-            normalize_transactions(source, date_format=config.date_format)
-            if config.date_format is not None
-            else source
-        )
+        cleaned, report = clean_transactions(source, normalized=normalized, date_format=config.date_format)
     else:
-        loaded = load_transactions(
-            source,
-            date_format=config.date_format,
-        )
-
-    cleaned, report = clean_transactions(loaded)
+        loaded = load_transactions(source, date_format=config.date_format)
+        cleaned, report = clean_transactions(loaded, normalized=True)
 
     rfm = compute_rfm(cleaned)
 
@@ -170,7 +164,7 @@ def run_pipeline(
                 "numpy",
                 "pandas",
                 "scikit-learn",
-                "openpyxl",
+                "python-calamine",
             )
         },
         "elapsed_seconds": perf_counter() - started,

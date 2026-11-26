@@ -17,7 +17,7 @@ export function ResultSummary({ result }: { result: AnalysisResponse }) {
         ['Total purchase value', formatNumber(metadata.total_monetary)],
       ].map(([label, value]) => <div className="metric" key={label}><dt>{label}</dt><dd>{value}</dd></div>)}
     </dl>
-    <p className="muted">Recency reference: {formatDate(metadata.reference_timestamp)}. Purchase values have no assumed currency and exclude returns.</p>
+    <p className="muted">Recency is counted back from {formatDate(metadata.reference_timestamp)}.</p>
     {model_quality.selected.reason && <p>{model_quality.selected.reason}</p>}
     <div className="actions"><Link className="button" to="/segments">View Segments</Link><Link className="button secondary" to="/insights">Explore Insights</Link></div>
   </section>;

@@ -37,7 +37,7 @@ Screenshots show the current application. Analytical values come from a real run
 | Backend | Python, FastAPI, Pydantic, Uvicorn; bounded multipart ingestion |
 | Machine learning | pandas, NumPy, scikit-learn: StandardScaler, KMeans, silhouette and PCA |
 | Visualization | Custom WebGL/SVG particle scene, Canvas PCA plot, SVG candidate chart and HTML distribution charts |
-| File processing | openpyxl with defusedxml for XLSX; PapaParse for preliminary browser CSV preview |
+| File processing | python-calamine (Rust) for fast XLSX reading, with DTD/entity rejection before parsing; PapaParse for the browser CSV preview |
 | Testing | pytest and HTTP API tests; Vitest, Testing Library and jsdom |
 
 ## How it works
@@ -194,11 +194,25 @@ npm run build
 npm test -- src/test/csv-security.test.ts
 ```
 
+### Performance
+
+Measured through the real HTTP API on a 16-core Windows laptop (Python 3.12, one worker, `OMP_NUM_THREADS=1`), K=4 with candidates 2–6:
+
+| Input | File size | Customers | Before | After |
+| --- | --- | --- | --- | --- |
+| Online Retail example (XLSX, 541,909 rows) | 23 MiB | 4,338 | 81 s | **11 s** |
+| Synthetic CSV, 100,000 rows | 5 MiB | 5,000 | 3.5 s | **0.9 s** |
+| Synthetic CSV, 500,000 rows | 27 MiB | 20,000 | 16 s | **4.4 s** |
+| Synthetic CSV, 1,000,000 rows | 53 MiB | 50,000 | 36 s | **10 s** |
+| Synthetic CSV, 1,300,000 rows | 69 MiB | – | rejected (413) | rejected (413) |
+
+"Before" read XLSX with openpyxl and validated every row twice; "after" reads XLSX with python-calamine, validates once and vectorizes CSV validation. Results on the example are identical. Peak extra memory is about 370 MiB for the 1M-row CSV and 600 MiB for the example workbook. The 64 MiB upload limit (roughly 1.2 million CSV rows) is the practical ceiling.
+
 Historical test results are not a substitute for rerunning the checks before deployment. The tests cover RFM semantics, cleaning, clustering, API validation, upload cleanup, prohibited XML, CORS, CSV security, frontend state, navigation and scene lifecycle behavior.
 
 ## Security and limitations
 
-- XLSX uploads use active XML protection, archive checks and size budgets. CSV exports visibly prefix formula-like text with `[text] `; raw API/explorer identifiers stay unchanged. Import ordinary leading-zero IDs as text. See [export policy](#security-reference).
+- XLSX uploads are rejected if any XML part declares a DTD or entity, and pass archive checks and size budgets. CSV exports visibly prefix formula-like text with `[text] `; raw API/explorer identifiers stay unchanged. Import ordinary leading-zero IDs as text. See [export policy](#security-reference).
 - Data quality, outliers and preprocessing affect clusters. Silhouette measures separation, not business usefulness; scores across different preprocessing spaces are not directly comparable.
 - Large workbooks require significant CPU time and memory. Upload/ZIP budgets are not complete memory or computation-time bounds. One analysis is admitted per process by default.
 - Personas describe retained purchases. No authentication, database, saved server-side analyses or background job queue is implemented.
@@ -388,7 +402,7 @@ This is a synchronous local service: the HTTP request waits for analysis. There 
 
 ### Upload security
 
-See [deployment requirements](#deployment-reference) for production origin/routing/startup requirements and [dataset notice](#dataset-reference) for example attribution. XLSX parsing requires active `defusedxml==0.7.1`; startup fails closed without it. Prohibited XML entities/external references return HTTP 400 `invalid_workbook`, stage `ingestion`, using the existing error envelope and a generic safe message. Other ingestion validation errors retain their documented codes/statuses. Archive duplicate names are rejected; file, request, member and expanded-size budgets remain unchanged.
+See [deployment requirements](#deployment-reference) for production origin/routing/startup requirements and [dataset notice](#dataset-reference) for example attribution. Before parsing, every XML part of an uploaded workbook is scanned for `<!DOCTYPE`/`<!ENTITY` declarations (UTF-8 and UTF-16); any match returns HTTP 400 `invalid_workbook`, stage `ingestion`, using the existing error envelope and a generic safe message. Other ingestion validation errors retain their documented codes/statuses. Archive duplicate names are rejected; file, request, member and expanded-size budgets remain unchanged.
 
 
 ---
@@ -407,7 +421,7 @@ Policy reference: [OWASP CSV Injection](https://community.owasp.org/attacks/CSV_
 
 ### XLSX and HTTP ingestion
 
-`backend/services/analysis_service.py` verifies active openpyxl/defusedxml parsing and fails closed if protection is inactive. The declared dependency is `defusedxml==0.7.1`. Prohibited entity declarations/external references return HTTP 400 `invalid_workbook`, stage `ingestion`, in the existing safe error envelope. Classification walks explicit exception causes and checks actual `DefusedXmlException` types; unrelated validation errors retain their own handling.
+XLSX files are read with python-calamine, about 10× faster than openpyxl on the example workbook. Real workbooks never need a DTD, so `segmentation/ingestion.py` rejects any XML part that declares one before calamine sees the file; this rules out entity expansion and external references regardless of parser behavior. `backend/services/analysis_service.py` maps that `UnsafeWorkbookError` to HTTP 400 `invalid_workbook`, stage `ingestion`, with a generic safe message; corrupt archives map to the same code.
 
 File/content checks, encrypted/duplicate ZIP member rejection, declared expanded-size/member budgets, bounded streaming multipart requests and upload-handle cleanup remain enabled. Admission capacity is released after success or failure. See [API limits and error contract](#api-reference) for exact budgets/statuses. Budget checks do not bound all object memory or computation time.
 
@@ -451,7 +465,7 @@ Copy the example files only to local ignored `.env` files. Vite loads its enviro
 - Separate HTTPS hosts: build with `VITE_API_BASE_URL=https://api.example.com` and configure `SEGMENTIQ_CORS_ORIGINS=https://app.example.com` using the actual explicit frontend origin. CORS denies other browser origins; it is not authentication or an abuse prevention control.
 - `API_PROXY_TARGET=http://127.0.0.1:8000` is a development/preview proxy setting, not a production browser origin. Local default CORS allows only localhost/127.0.0.1 port 5173. HTTP is accepted only on loopback; public origins require HTTPS, with no paths, credentials or wildcards.
 
-From repository root, launch local development using `python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000 --workers 1`. For a container/private service interface use `--host 0.0.0.0 --port <host-assigned-port> --workers 1` behind HTTPS ingress. Host/port are explicit Uvicorn arguments; do not assume backend dotenv contains them. Configure `OMP_NUM_THREADS=1`, `OPENBLAS_NUM_THREADS=1`, `MKL_NUM_THREADS=1` **before** launching Python. Health: `curl --fail http://127.0.0.1:8000/api/health`. Server startup fails closed if openpyxl XML protection is inactive; restart after dependency installation.
+From repository root, launch local development using `python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000 --workers 1`. For a container/private service interface use `--host 0.0.0.0 --port <host-assigned-port> --workers 1` behind HTTPS ingress. Host/port are explicit Uvicorn arguments; do not assume backend dotenv contains them. Configure `OMP_NUM_THREADS=1`, `OPENBLAS_NUM_THREADS=1`, `MKL_NUM_THREADS=1` **before** launching Python. Health: `curl --fail http://127.0.0.1:8000/api/health`.
 
 Serve only `frontend/dist` as static content. Configure history fallback to `index.html` for `/analyze`, `/segments`, `/insights`, `/methodology`, `/about` and other client routes. Exclude `/api/*` and missing static assets from that fallback. Vite preview validates the built app locally but is not a production server.
 

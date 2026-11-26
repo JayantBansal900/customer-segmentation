@@ -9,5 +9,5 @@ export function RFMDistributions({ customers }: { customers: Customer[] }) {
     { title: 'Raw frequency distribution (invoices)', bars: histogram(customers.map(c => c.frequency)) },
     { title: 'Raw monetary distribution (purchase value)', bars: histogram(customers.map(c => c.monetary)) },
   ], [customers]);
-  return <section className="rfm-distributions" aria-labelledby="rfm-title"><h2 id="rfm-title">Raw RFM distributions</h2><p>Customer counts in up to 10 equal-width bins. Outliers can stretch ranges; model inputs stay unchanged.</p><div className="grid gap-4 lg:grid-cols-3">{charts.map(chart => <BarChart key={chart.title} {...chart} />)}</div></section>;
+  return <section className="rfm-distributions" aria-labelledby="rfm-title"><h2 id="rfm-title">Raw RFM distributions</h2><p>How many customers fall into each range. A few extreme customers can stretch the ranges.</p><div className="grid gap-4 lg:grid-cols-3">{charts.map(chart => <BarChart key={chart.title} {...chart} />)}</div></section>;
 }

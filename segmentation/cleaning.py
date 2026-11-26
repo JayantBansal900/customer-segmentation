@@ -27,15 +27,18 @@ class CleaningReport:
         return self.input_rows - self.cleaned_rows
 
 
-def clean_transactions(frame: pd.DataFrame) -> tuple[pd.DataFrame, CleaningReport]:
+def clean_transactions(frame: pd.DataFrame, *, normalized: bool = False, date_format: str | None = None) -> tuple[pd.DataFrame, CleaningReport]:
     """Copy/validate transactions, remove exclusions, then add TotalAmount.
+
+    Pass normalized=True only for frames returned by load_transactions() or
+    normalize_transactions(); validation is then not repeated.
 
     Invalid transaction values are rejected rather than imputed. Negative and
     zero numeric values are valid input but excluded by this purchase policy.
     Duplicate comparison uses all source columns, before adding TotalAmount.
     Missing IDs, cancellations, quantity, price, duplicates are counted in order.
     """
-    work = normalize_transactions(frame)
+    work = frame.reset_index(drop=True) if normalized else normalize_transactions(frame, date_format=date_format)
     initial = len(work)
     counts: list[int] = []
     for predicate in (

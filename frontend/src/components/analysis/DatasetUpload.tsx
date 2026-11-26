@@ -43,7 +43,7 @@ export function DatasetUpload({ config, running, uploadError, onError, onFile, o
     </div>
     <label className="upload-input-label">Dataset file<input ref={input} type="file" accept=".csv,.xlsx" disabled={running} aria-describedby="upload-guidance" aria-invalid={invalid || undefined}
       onChange={event => { const files = Array.from(event.target.files ?? []); if (files.length) receive(files); event.target.value = ''; }} /></label>
-    <p className="upload-guidance" id="upload-guidance">Choosing a file selects its format. This size check is preliminary; the server validates the full dataset.</p>
+    <p className="upload-guidance" id="upload-guidance">Needs columns CustomerID, InvoiceNo, InvoiceDate, Quantity and UnitPrice.</p>
     {uploadError && <div className="upload-error" role="alert"><p>{uploadError}</p><button type="button" className="remove-file" disabled={running} onClick={() => onError('')}>Dismiss upload error</button></div>}
     {config.file && fileIssues.length > 0 && <ul className="upload-error" role="alert">{fileIssues.map(issue => <li key={issue}>{issue}</li>)}</ul>}
   </div>;

@@ -6,17 +6,13 @@ from pathlib import PurePosixPath
 from threading import BoundedSemaphore
 from time import perf_counter
 from typing import BinaryIO
-from xml.etree.ElementTree import ParseError
 from zipfile import BadZipFile, ZipFile, is_zipfile
 
-from openpyxl.utils.exceptions import InvalidFileException
-from openpyxl.xml import DEFUSEDXML
-from openpyxl.xml.functions import iterparse
-from defusedxml.common import DefusedXmlException
-from defusedxml.ElementTree import iterparse as safe_iterparse
+from python_calamine import CalamineError
 from starlette.datastructures import UploadFile
 
-from segmentation import AnalysisValidationError, PipelineConfig, PipelineResult, run_pipeline
+from segmentation import PipelineConfig, PipelineResult, run_pipeline
+from segmentation.errors import UnsafeWorkbookError
 from segmentation.ingestion import load_transactions
 
 from ..config import Settings
@@ -83,8 +79,6 @@ class AnalysisService:
     """Per-app admission control and single-read engine execution."""
 
     def __init__(self, settings: Settings):
-        if not DEFUSEDXML or iterparse is not safe_iterparse:
-            raise RuntimeError("XLSX analysis requires active defusedxml parsing; install the declared security dependency and restart Python.")
         self.settings = settings
         self.capacity = BoundedSemaphore(settings.max_concurrent_analyses)
 
@@ -145,24 +139,17 @@ class AnalysisService:
             candidate_ks=tuple(range(parameters.candidate_k_min, parameters.candidate_k_max + 1)),
             preprocessing=PREPROCESSING_MAP[parameters.preprocessing],
             silhouette_sample_size=self.settings.silhouette_sample_size, date_format=parameters.date_format)
-        result = run_pipeline(frame, config)
+        result = run_pipeline(frame, config, normalized=True)
         response = response_contract(result, parameters, dataset_source=dataset_source,
             dataset_name=dataset_name, request_id=request_id, elapsed_seconds=perf_counter() - started)
         return response.model_dump_json().encode("utf-8")
 
     @staticmethod
     def _read(handle: BinaryIO, kind: str, date_format: str | None):
-        """Use existing ingestion; classify corrupt archive/XML reader failures."""
+        """Use existing ingestion; classify unsafe or corrupt workbooks safely."""
         try:
             return load_transactions(handle, file_format=kind, date_format=date_format)
-        except AnalysisValidationError as exc:
-            cause = exc.__cause__
-            # openpyxl wraps XML security errors in ValueError before ingestion
-            # wraps them again. Inspect explicit causes, never message text.
-            while cause is not None and not isinstance(cause, DefusedXmlException):
-                cause = cause.__cause__
-            if isinstance(cause, DefusedXmlException):
-                raise ApiError(400, "invalid_workbook", "Workbook XML contains prohibited entities or external references.", stage="ingestion") from exc
-            raise
-        except (BadZipFile, ParseError, InvalidFileException, KeyError, DefusedXmlException) as exc:
+        except UnsafeWorkbookError as exc:
+            raise ApiError(400, "invalid_workbook", "Workbook XML contains prohibited entities or external references.", stage="ingestion") from exc
+        except (BadZipFile, CalamineError, KeyError) as exc:
             raise ApiError(400, "invalid_workbook", "Workbook content is malformed.", stage="ingestion") from exc

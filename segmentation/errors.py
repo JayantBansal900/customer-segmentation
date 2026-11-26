@@ -27,6 +27,13 @@ class AnalysisValidationError(ValueError):
         return {"stage": self.stage, "issues": [asdict(i) for i in self.issues], "context": self.context}
 
 
+class UnsafeWorkbookError(AnalysisValidationError):
+    """An XLSX part declares a DTD or entities, which real workbooks never need."""
+
+    def __init__(self) -> None:
+        super().__init__([ValidationIssue("invalid_workbook", "Workbook XML contains prohibited DTD or entity declarations.")], stage="ingestion")
+
+
 def invalid(code: str, message: str, *, stage: str, context: dict | None = None) -> AnalysisValidationError:
     """Construct a single-issue validation error."""
     return AnalysisValidationError([ValidationIssue(code, message)], stage=stage, context=context)
