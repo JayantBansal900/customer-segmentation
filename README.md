@@ -3,6 +3,8 @@
 
 Segmentra turns a sales export into customer groups you can explore. It builds an RFM profile for every customer (Recency, Frequency, Monetary), groups similar customers with KMeans, and shows the result in a React web app.
 
+📖 **Read the story behind this project:** [How I Found the 13 Customers Behind 19% of a Shop's Sales](https://dev.to/jayantbansal900/how-i-found-the-13-customers-behind-19-of-a-shops-sales-mme)
+
 ## Features
 
 - Upload a CSV or Excel file, or try the built-in Online Retail example.
