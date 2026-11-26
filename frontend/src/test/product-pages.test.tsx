@@ -73,8 +73,9 @@ describe('project transparency and links',()=>{
     render(<MemoryRouter><Methodology/></MemoryRouter>);expect(within(screen.getByRole('list',{name:'Implemented segmentation pipeline'})).getAllByRole('listitem')).toHaveLength(6);
     expect(screen.getByText('count distinct InvoiceNo per CustomerID')).toBeInTheDocument();expect(screen.getByText(/one day after the latest retained transaction/)).toBeInTheDocument();expect(screen.getByRole('link',{name:/Start Analyzing/})).toHaveAttribute('href','/analyze');
   });
-  it('labels conceptual artwork and links About actions to actual routes',()=>{
-    render(<MemoryRouter><About/></MemoryRouter>);expect(screen.getByRole('img')).toHaveAccessibleName(/not analysis data/);expect(screen.getByRole('link',{name:/Start Analyzing/})).toHaveAttribute('href','/analyze');expect(screen.getByRole('link',{name:/Explore Methodology/})).toHaveAttribute('href','/methodology');
+  it('shows the example funnel and links About actions to actual routes',()=>{
+    render(<MemoryRouter><About/></MemoryRouter>);expect(within(screen.getByRole('figure',{name:/Online Retail example/})).getAllByRole('listitem')).toHaveLength(4);
+    expect(screen.getByRole('link',{name:'View the source code'})).toHaveAttribute('href','https://github.com/JayantBansal900/customer-segmentation');expect(screen.getByRole('link',{name:/Start Analyzing/})).toHaveAttribute('href','/analyze');expect(screen.getByRole('link',{name:/Explore Methodology/})).toHaveAttribute('href','/methodology');
   });
 });
 

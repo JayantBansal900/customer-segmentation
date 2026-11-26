@@ -31,7 +31,7 @@ describe('routes and guided analysis', () => {
     expect(document.title).toBe('Segmentra — Analyze');
     await user.click(nav('Home'));
     await user.click(screen.getByRole('link', { name: 'Explore Methodology' }));
-    expect(screen.getByRole('heading', { name: 'From transactions to intelligence.' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'How Segmentra groups your customers' })).toBeInTheDocument();
     expect(document.title).toBe('Segmentra — Methodology');
     expect(api).not.toHaveBeenCalled();
   });
@@ -39,7 +39,7 @@ describe('routes and guided analysis', () => {
   it('navigates every route using router links with an active state', async () => {
     const user = app();
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Discover the patterns');
-    for (const [name, heading] of [['Analyze', 'Analyze your customers'], ['Segments', 'Your customers, decoded.'], ['Insights', 'Intelligence behind the segments.'], ['Methodology', 'From transactions to intelligence.'], ['About', 'Making customer behavior understandable.'], ['Home', 'Discover the patterns']]) {
+    for (const [name, heading] of [['Analyze', 'Analyze your customers'], ['Segments', 'Your customers, decoded.'], ['Insights', 'Intelligence behind the segments.'], ['Methodology', 'How Segmentra groups your customers'], ['About', 'Making customer behavior understandable.'], ['Home', 'Discover the patterns']]) {
       await user.click(nav(name)); expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(heading); expect(nav(name)).toHaveAttribute('aria-current', 'page');
     }
     expect(api).not.toHaveBeenCalled();

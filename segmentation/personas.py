@@ -14,8 +14,9 @@ def _number(value: float) -> str:
 def _describe(values: tuple[float, float, float], typical: tuple[float, float, float]) -> str:
     """Plain-language summary of a cluster's median customer."""
     (recency, frequency, monetary), (typical_r, typical_f, typical_m) = values, typical
-    return (f"A typical customer in this group last bought {_number(recency)} days before the dataset ended "
-            f"(overall: {_number(typical_r)}), placed {_number(frequency)} orders (overall: {_number(typical_f)}) "
+    orders = "order" if frequency == 1 else "orders"
+    return (f"A typical customer in this group last bought {round(recency):,} days before the dataset ended "
+            f"(overall: {round(typical_r):,}), placed {_number(frequency)} {orders} (overall: {_number(typical_f)}) "
             f"and spent {_number(monetary)} in total (overall: {_number(typical_m)}).")
 
 
