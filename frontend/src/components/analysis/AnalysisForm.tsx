@@ -33,11 +33,9 @@ export function AnalysisForm() {
         <input type="radio" name="source" value={source} aria-label={label} checked={config.source === source} onChange={() => { setUploadError(''); updateConfig({ source, file: null, dateFormat: '' }); }} />
         <span><strong>{label}</strong><small>{detail}</small></span>
       </label>)}</div>
+      {config.source === 'example' && <div className="example-dataset"><span className="dataset-icon" aria-hidden="true">↗</span><div><strong>Online Retail.xlsx</strong><p>541,909 real transactions from a UK online retailer, 2010–2011.</p></div><span className="example-status">Ready to run</span></div>}
       <DatasetUpload config={config} running={running} uploadError={uploadError} onError={setUploadError} onFile={selectFile} onClear={() => updateConfig({ file: null })} />
-      {config.source === 'example' && <div className="example-dataset"><span className="dataset-icon" aria-hidden="true">↗</span><div><strong>Online Retail.xlsx</strong><p>541,909 real transactions from a UK online retailer.</p></div><span className="example-status">Example selected</span></div>}
-      <section className="input-inspection" aria-labelledby="inspect-title"><h2 id="inspect-title">Inspect your input</h2>
-        {config.source === 'example' ? <><p>Required transaction columns:</p><div className="schema-strip">{['CustomerID','InvoiceNo','InvoiceDate','Quantity','UnitPrice'].map(column => <code key={column}>{column}</code>)}</div><p className="help">Example records load when you run analysis.</p></> : <FilePreview file={config.file} />}
-      </section>
+      {config.source !== 'example' && <section className="input-inspection" aria-labelledby="inspect-title"><h2 id="inspect-title">Inspect your input</h2><FilePreview file={config.file} /></section>}
     </fieldset>
 
     <fieldset disabled={running} className="analysis-step configuration-step">
@@ -59,9 +57,9 @@ export function AnalysisForm() {
     </fieldset>
 
     <section className="analysis-step run-step" aria-labelledby="run-title">
-      <div className="run-heading"><span className="workflow-index">03</span><div><h2 id="run-title">Find the patterns.</h2><p>Ready to find your customer groups.</p></div></div>
+      <div className="run-heading"><span className="workflow-index">03</span><div><h2 id="run-title">Run the analysis</h2><p>{config.source === 'example' ? 'The example takes about 10 seconds.' : 'Large files can take up to a minute.'}</p></div></div>
       {issues.length > 0 && <ul id="configuration-issues" className="validation-list">{issues.map(issue => <li key={issue}>{issue}</li>)}</ul>}
-      <div className="run-action-row"><p className="run-note">RFM profiles <span aria-hidden="true">→</span> KMeans clustering<br /><small>Results become available in Segments and Insights.</small></p>
+      <div className="run-action-row"><p className="run-note">Results open in Segments and Insights.</p>
         <div className="actions"><button className="button run-segmentation" type="submit" disabled={running || issues.length > 0 || !!uploadError} aria-describedby={issues.length ? 'configuration-issues' : undefined}>{running ? 'Analysis running…' : 'Run Segmentation'}<span aria-hidden="true">{running ? '◌' : '↗'}</span></button>{running && <button type="button" className="button secondary" onClick={cancel}>Stop waiting</button>}</div>
       </div>
       {running && <div className="processing-feedback" role="status" aria-live="polite"><span className="processing-signal" aria-hidden="true" /><div><p>Uploading and analyzing your dataset…</p><p>Large files can take up to a minute.</p><p aria-hidden="true">Waiting {Math.floor(elapsed)} seconds</p></div></div>}

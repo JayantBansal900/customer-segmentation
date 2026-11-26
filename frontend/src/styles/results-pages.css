@@ -1,0 +1,95 @@
+/* Segments and Insights: the result itself is the hero. */
+.results-page {
+  --ink: #e2ece7;
+  --ink-soft: #a9bfb5;
+  --ink-faint: #7f978d;
+  --line: #a7c1b526;
+}
+.results-page > * { margin-bottom: 22px; }
+.results-heading { padding: 18px 0 14px; max-width: 760px; }
+.results-heading h1 { font-size: clamp(32px, 4.4vw, 50px); line-height: 1.06; font-weight: 440; letter-spacing: -.045em; color: var(--ink); margin: 0 0 14px; }
+.results-heading p { font-size: 14px !important; line-height: 1.7 !important; color: var(--ink-soft); margin: 0; }
+
+/* ---------- Segment cards ---------- */
+.segment-overview .population-strip { display: flex; gap: 3px; height: 12px; border-radius: 6px; overflow: hidden; margin-bottom: 14px; }
+.segment-overview .population-strip span { min-width: 4px; }
+.segment-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.segment-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  text-align: left;
+  padding: 18px 18px 16px;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--segment);
+  background: linear-gradient(170deg, #17282a99, #0c171ccc);
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: background .2s, border-color .2s;
+}
+.segment-card:hover { background: linear-gradient(170deg, #1d3233aa, #0f1c20dd); }
+.segment-card[aria-pressed=true] { border-color: color-mix(in srgb, var(--segment) 55%, transparent); background: linear-gradient(170deg, color-mix(in srgb, var(--segment) 16%, #0c171c), #0c171ce6); }
+.segment-card:focus-visible { outline: 2px solid var(--segment); outline-offset: 3px; }
+.segment-card-name { font-size: 16px; font-weight: 500; color: var(--ink); letter-spacing: -.02em; line-height: 1.3; }
+.segment-card-id { font-size: 11px; color: var(--ink-faint); margin-bottom: 8px; }
+.segment-card-share { font-size: 12.5px; }
+.segment-card-share strong { font-size: 20px; font-weight: 470; color: var(--ink); letter-spacing: -.03em; font-variant-numeric: tabular-nums; margin-right: 4px; }
+.segment-card-share small { font-size: 11px; color: var(--ink-faint); margin-left: 4px; }
+.segment-card-rfm { margin-top: 8px; padding-top: 10px; border-top: 1px solid var(--line); width: 100%; font-size: 11.5px; color: var(--ink-faint); font-variant-numeric: tabular-nums; }
+
+/* ---------- Selected segment ---------- */
+.segment-detail { border-left: 3px solid var(--segment) !important; }
+.segment-detail-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap; }
+.segment-detail h2 { display: flex; align-items: center; gap: 12px; font-size: clamp(22px, 2.4vw, 28px) !important; letter-spacing: -.03em; margin: 0 0 4px; }
+.segment-detail h2 .cluster-dot { width: 12px; height: 12px; border-radius: 4px; background: var(--segment); }
+.segment-detail-sub { font-size: 12.5px !important; color: var(--ink-faint); margin: 0; }
+.segment-detail .actions { align-items: flex-end; }
+.segment-description { font-size: 14px !important; line-height: 1.7 !important; color: var(--ink-soft); max-width: 70ch; margin: 18px 0 0; }
+.segment-detail .metrics { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }
+
+.results-page .rfm-comparison .section-top { flex-wrap: wrap; }
+.explorer-filters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-bottom: 8px; }
+.results-page .group-cell { color: var(--ink); }
+
+@media (max-width: 760px) {
+  .segment-detail .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .explorer-filters { grid-template-columns: 1fr; }
+  .segment-detail .actions { width: 100%; }
+}
+
+/* ---------- Insights ---------- */
+.quality-verdict { display: grid; grid-template-columns: 1.3fr 1fr; gap: 40px; align-items: start; }
+.quality-verdict h2 { font-size: 14px !important; letter-spacing: 0; color: var(--ink-soft); margin: 0 0 6px; }
+.verdict-word { font-size: clamp(30px, 3.6vw, 44px) !important; line-height: 1.1 !important; letter-spacing: -.04em; color: var(--ink); margin: 0 0 22px; }
+.silhouette-scale { position: relative; height: 10px; border-radius: 5px; margin: 0 0 34px; background: linear-gradient(90deg, #f1978155, #e7cca055 50%, #66dccbaa); }
+.scale-marker { position: absolute; top: -6px; width: 4px; height: 22px; border-radius: 2px; background: var(--ink); transform: translateX(-50%); box-shadow: 0 0 0 3px #0c171c; }
+.scale-labels { position: absolute; top: 18px; left: 0; right: 0; display: flex; justify-content: space-between; font-size: 11px; color: var(--ink-faint); }
+.quality-verdict .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; margin: 0 !important; }
+
+.choosing-k > p { color: var(--ink-soft); max-width: 70ch; }
+.choosing-k .analytics-pair { margin: 18px 0 8px; }
+.choosing-k .analytics-pair > * { margin-bottom: 0; }
+
+.cleaning-panel > p { color: var(--ink-soft); font-size: 14px !important; }
+.cleaning-bar { display: flex; gap: 2px; height: 28px; border-radius: 8px; overflow: hidden; margin: 18px 0 18px; }
+.cleaning-bar span { min-width: 3px; }
+.kept { background: #66dccb; }
+.removed-0 { background: #f19781; }
+.removed-1 { background: #e7cca0; }
+.removed-2 { background: #99bcef; }
+.removed-3 { background: #c1a9de; }
+.removed-4 { background: #a4c697; }
+.cleaning-list { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px 28px; }
+.cleaning-list li { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--ink-soft); padding: 8px 0; border-bottom: 1px solid var(--line); }
+.cleaning-list strong { margin-left: auto; font-weight: 480; color: var(--ink); font-variant-numeric: tabular-nums; }
+.cleaning-list .is-zero { opacity: .55; }
+.swatch { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+.cleaning-list .is-zero .swatch { background: transparent; border: 1px solid var(--line); }
+
+@media (max-width: 900px) {
+  .quality-verdict { grid-template-columns: 1fr; gap: 24px; }
+  .cleaning-list { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 560px) { .cleaning-list { grid-template-columns: 1fr; } }

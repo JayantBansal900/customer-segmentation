@@ -32,10 +32,3 @@ export const groups = [
   {name:'Regular Customers', detail:'A familiar purchasing rhythm', tone:'gold'},
   {name:'Inactive Customers', detail:'A longer time since purchase', tone:'blue'},
 ] as const;
-export function decorativePoints(width: number) {
-  let previewSeed = seed;
-  const sample = () => { previewSeed = (previewSeed * 16807) % 2147483647; return previewSeed / 2147483647; };
-  // Match the two approved preview fields without mutable render-time randomness.
-  if (width === 220) for (let i = 0; i < 300; i++) sample();
-  return Array.from({length:100}, (_,i) => ({left:width*.18+(i%3)*width*.28+(sample()-.5)*width*.24, top:25+Math.sin(i%3)*10+(sample()-.5)*35, background:colors[i%3], opacity:.4+sample()*.5}));
-}

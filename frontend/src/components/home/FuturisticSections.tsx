@@ -1,82 +1,64 @@
 import { Link } from 'react-router-dom';
-import { decorativePoints } from './intelligence-data';
+import '../../styles/home-findings.css';
 
-function DecorativeParticles({ className, width }: { className: string; width: number }) {
-  return <div className={className} aria-hidden="true">
-    {decorativePoints(width).map((style, index) => <i key={index} style={style} />)}
+// Real result of the bundled Online Retail example with the default settings (K = 4, original scaling).
+const EXAMPLE_GROUPS = [
+  { name: 'Top spenders', color: '#66dccb', customers: 13, customerShare: 0.3, salesShare: 18.6, recency: 2, orders: 63, spend: '117,210' },
+  { name: 'High-value regulars', color: '#e7cca0', customers: 204, customerShare: 4.7, salesShare: 29.1, recency: 5, orders: 19, spend: '7,990' },
+  { name: 'Core customers', color: '#99bcef', customers: 3054, customerShare: 70.4, salesShare: 46.5, recency: 32, orders: 3, spend: '826' },
+  { name: 'Lapsed one-time buyers', color: '#f19781', customers: 1067, customerShare: 24.6, salesShare: 5.7, recency: 243, orders: 1, spend: '310' },
+];
+
+function ShareBar({ label, field }: { label: string; field: 'customerShare' | 'salesShare' }) {
+  return <div className="share-row">
+    <span className="share-label">{label}</span>
+    <div className="share-bar" role="img" aria-label={`${label}: ${EXAMPLE_GROUPS.map(g => `${g.name} ${g[field]}%`).join(', ')}`}>
+      {EXAMPLE_GROUPS.map(group => <span key={group.name} style={{ flexGrow: Math.max(group[field], .6), background: group.color }} />)}
+    </div>
   </div>;
 }
 
-function ProcessSection() {
-  return <section className="process" aria-labelledby="process-heading">
-    <div className="section-heading">
-      <p className="eyebrow">A clear path to discovery</p>
-      <h2 id="process-heading">Complex data.<br />Clearer possibilities.</h2>
-      <p>Upload. Group. Explore.</p>
+function FindingsSection() {
+  return <section className="home-findings" aria-labelledby="findings-heading">
+    <div className="findings-intro">
+      <h2 id="findings-heading">13 customers.<br />19% of all sales.</h2>
+      <p>That is one of four groups Segmentra found in 541,909 real transactions from a UK online shop. Customers and sales are split very differently:</p>
     </div>
-    <ol className="process-track">
-      <li>
-        <span className="step">01</span>
-        <div className="file-object" aria-hidden="true"><i /><i /><i /><b>CSV / XLSX</b></div>
-        <h3>Upload Your Data</h3>
-        <p>Upload CSV or XLSX, or try the example.</p>
-      </li>
-      <li>
-        <span className="step">02</span>
-        <DecorativeParticles className="cluster-object" width={100} />
-        <h3>Run Segmentation</h3>
-        <p>Group customers by purchase patterns.</p>
-      </li>
-      <li>
-        <span className="step">03</span>
-        <div className="insight-object" aria-hidden="true"><i /><i /><i /><i /></div>
-        <h3>Explore Insights</h3>
-        <p>Compare groups and export results.</p>
-      </li>
-    </ol>
+    <div className="findings-chart">
+      <ShareBar label="Customers" field="customerShare" />
+      <ShareBar label="Sales" field="salesShare" />
+      <ul className="findings-groups">{EXAMPLE_GROUPS.map(group => <li key={group.name} style={{ ['--group' as string]: group.color }}>
+        <h3>{group.name}</h3>
+        <p className="group-share"><strong>{group.customers.toLocaleString('en-US')}</strong> customers · {group.salesShare}% of sales</p>
+        <p>Last bought {group.recency} days before the data ends, {group.orders} {group.orders === 1 ? 'order' : 'orders'}, {group.spend} spent</p>
+      </li>)}</ul>
+      <p className="findings-note">Typical (median) customer in each group, default settings.</p>
+    </div>
   </section>;
 }
 
-function AnalyticsSection() {
-  return <section className="analytics" id="analytics" aria-labelledby="analytics-heading">
-    <div className="section-heading">
-      <p className="eyebrow">Powerful analytics</p>
-      <h2 id="analytics-heading">Every connection.<br />A deeper understanding.</h2>
-      <p>See what makes each group distinct.</p>
-    </div>
-    <div className="analytics-composition">
-      <article className="rfm">
-        <div>
-          <span className="feature-note">Understand the individual</span>
-          <h3>RFM Analysis</h3>
-          <p>How recently, how often, and how much customers buy.</p>
-        </div>
-        <div className="rfm-visual" aria-hidden="true"><span>R<i /></span><span>F<i /></span><span>M<i /></span></div>
-      </article>
-      <article className="kmeans">
-        <span className="feature-note">Discover the collective</span>
-        <h3>KMeans Clustering</h3>
-        <p>Find customers with similar purchase patterns.</p>
-        <DecorativeParticles className="kmeans-visual" width={220} />
-      </article>
-      <div className="feature-row">
-        <article><span className="feature-symbol" aria-hidden="true">▥</span><h3>Segment Profiles</h3><p>Compare each group’s purchase behavior.</p></article>
-        <article><span className="feature-symbol axes" aria-hidden="true">⤢</span><h3>PCA Visualization</h3><p>Explore customer patterns in two dimensions.</p></article>
-        <article><span className="feature-symbol" aria-hidden="true">≡</span><h3>Customer Explorer</h3><p>Search, filter, and inspect customer records.</p></article>
-      </div>
-    </div>
+const STEPS = [
+  ['Upload a sales file', 'A CSV or Excel export with customer, invoice, date, quantity and price. Or use the example.'],
+  ['Choose how many groups', 'Pick a number, or let Segmentra recommend one.'],
+  ['Explore and export', 'Compare the groups, look up any customer, download the results.'],
+];
+
+function StepsSection() {
+  return <section className="home-steps" aria-labelledby="steps-heading">
+    <h2 id="steps-heading">Three steps, about ten seconds.</h2>
+    <ol>{STEPS.map(([title, text], i) => <li key={title}><span aria-hidden="true">{i + 1}</span><h3>{title}</h3><p>{text}</p></li>)}</ol>
+    <Link to="/methodology" className="steps-link">See how the grouping works</Link>
   </section>;
 }
 
 function ClosingSection() {
   return <section className="closing">
     <div className="closing-orbit" aria-hidden="true" />
-    <p className="eyebrow">Your next discovery starts here</p>
-    <h2>Your customers have a story.<br /> Find the patterns that tell it.</h2>
+    <h2>See your own customers this way.</h2>
     <Link className="primary" to="/analyze">Start Analyzing <span aria-hidden="true">↗</span></Link>
   </section>;
 }
 
 export function FuturisticSections() {
-  return <><ProcessSection /><AnalyticsSection /><ClosingSection /></>;
+  return <><FindingsSection /><StepsSection /><ClosingSection /></>;
 }

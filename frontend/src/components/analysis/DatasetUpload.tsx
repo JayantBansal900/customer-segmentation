@@ -26,14 +26,15 @@ export function DatasetUpload({ config, running, uploadError, onError, onFile, o
     event.preventDefault(); setDragging(false);
     receive(Array.from(event.dataTransfer.files));
   }
-  return <div className={`dataset-upload${dragging ? ' is-dragging' : ''}${invalid ? ' has-file-error' : ''}`} role="group" aria-label="Dataset upload zone"
+  const compact = config.source === 'example' && !config.file;
+  return <div className={`dataset-upload${compact ? ' is-compact' : ''}${dragging ? ' is-dragging' : ''}${invalid ? ' has-file-error' : ''}`} role="group" aria-label="Dataset upload zone"
     onDragEnter={event => { event.preventDefault(); if (!running) setDragging(true); }}
     onDragOver={event => { event.preventDefault(); event.dataTransfer.dropEffect = running ? 'none' : 'copy'; }}
     onDragLeave={event => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setDragging(false); }}
     onDrop={drop}>
     <div className="upload-symbol" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><path d="M16 7h12l9 9v25H11V12a5 5 0 0 1 5-5Z" stroke="currentColor" strokeWidth="1.3" /><path d="M28 7v10h9M24 33V22m-5 5 5-5 5 5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /></svg></div>
     <div className="upload-copy">
-      <h3>{config.file ? config.file.name : 'Choose your transaction file.'}</h3>
+      <h3>{config.file ? config.file.name : compact ? 'Have your own data?' : 'Choose your transaction file.'}</h3>
       <p>{config.file ? `${config.file.size < 1024 * 1024 ? formatNumber(config.file.size) + ' bytes' : formatNumber(config.file.size / 1024 / 1024) + ' MiB'} · ${config.file.name.split('.').pop()?.toUpperCase()}` : 'Drop a CSV or XLSX here, or browse your files.'}</p>
       <span className="upload-file-status">{config.file ? invalid ? 'Review the file issues below' : 'Selected · awaiting validation' : 'CSV / XLSX · One file · Up to ' + formatNumber(MAX_UPLOAD_BYTES / 1024 / 1024) + ' MiB'}</span>
     </div>
