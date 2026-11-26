@@ -172,7 +172,7 @@ The repository retains the original **Online Retail.xlsx**, a public dataset by 
 
 See [DATASET.md](#dataset-reference) for provenance, attribution and deployment provisioning. If the workbook is missing from your checkout, download the official dataset and place the extracted workbook at the repository root. Private uploads and exports belong outside Git and static hosting.
 
-Dataset licensing is separate from Segmentra source code. No source-code license has been selected; this README does not grant an open-source license. Sora's license and font source are retained in [frontend/public/fonts](frontend/public/fonts).
+Dataset licensing is separate from Segmentra source code. Segmentra source code is released under the [MIT License](LICENSE). Sora's license and font source are retained in [frontend/public/fonts](frontend/public/fonts).
 
 ## Frontend configuration
 
@@ -467,7 +467,7 @@ Keep uploads, exports, dotenv values and local review archives out of Git and st
 
 ### Dataset provenance
 
-Source: [UCI Online Retail](https://archive.ics.uci.edu/dataset/352/online+retail). Citation: Chen, D. (2015). Online Retail. UCI Machine Learning Repository. https://doi.org/10.24432/C5BW33. UCI licenses the dataset under [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/). Retain attribution, a license link, and describe modifications when redistributing. Segmentra analysis derives cleaned purchase-only RFM profiles; the bundled workbook itself is unmodified. This notice does not choose a license for Segmentra source code.
+Source: [UCI Online Retail](https://archive.ics.uci.edu/dataset/352/online+retail). Citation: Chen, D. (2015). Online Retail. UCI Machine Learning Repository. https://doi.org/10.24432/C5BW33. UCI licenses the dataset under [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/). Retain attribution, a license link, and describe modifications when redistributing. Segmentra analysis derives cleaned purchase-only RFM profiles; the bundled workbook itself is unmodified. Segmentra source code itself is MIT-licensed; see [LICENSE](LICENSE).
 
 The local workbook was compared against the workbook extracted from UCI's official download. Both contain 23,715,344 bytes with SHA-256 `43465a06f2ccf7c8b5bd2892bc7defb52f97487934fe93b16ae4c3936424676d`; they are byte-identical. Redistribution provenance is verified, rather than inferred from a filename.
 
@@ -506,7 +506,7 @@ Historical Phase 5A example: approximately 88.28 s, 482 MiB sampled resident mem
 
 ### Required gates before hosting
 
-1. Review the intended deployment files and scan for secrets. Preserve dataset/font notices; exclude private uploads, exports and local archives. Source-code licensing remains an owner decision; it is separate from the verified dataset license.
+1. Review the intended deployment files and scan for secrets. Preserve dataset/font notices; exclude private uploads, exports and local archives. Source code is MIT-licensed; that is separate from the dataset's CC BY 4.0 license.
 2. Reproduce installation, tests and build on the target OS; review current runtime advisories and installer advisories separately.
 3. Select a host with demonstrated memory/CPU/temporary-disk headroom; configure HTTPS, exact origins, SPA/API routing and ingestion/abuse limits.
 4. Stage-test example, upload limits, invalid XML, busy responses, health responsiveness, disconnect behavior and deep-link refresh through the actual ingress.
