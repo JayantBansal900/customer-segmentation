@@ -20,16 +20,6 @@ Turn transaction history into customer groups you can explore. Segmentra combine
 - Download spreadsheet-safe customer and segment CSV exports.
 - Explore six responsive pages, with keyboard controls, reduced-motion support and an SVG fallback for the illustrative WebGL Home scene.
 
-## Application preview
-
-Screenshots show the current application. Analytical values come from a real run of the attributed public UCI example; the Home scene is explicitly illustrative.
-
-| Analyze | Segments |
-| --- | --- |
-| ![Analysis workflow](docs/screenshots/analyze.jpg) | ![Customer segment profiles](docs/screenshots/segments.jpg) |
-
-![Model quality and PCA](docs/screenshots/insights.jpg)
-
 ## Technology
 
 | Area | Implementation |
@@ -74,7 +64,7 @@ customer-segmentation/
 ├── tests/               # Python and API security tests
 ├── tools/               # Optional full-workbook validation
 ├── docs/
-│   └── screenshots/     # Current public application screenshots
+│   └── screenshots/     # Home screenshot used at the top of this README
 ├── Online Retail.xlsx   # Attributed public example, inherited in Git
 ├── pyproject.toml
 └── requirements-backend.txt
