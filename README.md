@@ -6,7 +6,7 @@ Turn transaction history into customer groups you can explore. Segmentra combine
 
 ![Segmentra Home](docs/screenshots/home.jpg)
 
-[Features](#features) · [Local setup](#local-setup) · [How it works](#how-it-works) · [Dataset](#dataset-and-attribution) · [Deployment](#deployment-status)
+[Features](#features) · [Local setup](#local-setup) · [Your data](#preparing-your-data) · [How it works](#how-it-works) · [Dataset](#dataset-and-attribution) · [Deployment](#deployment-status)
 
 ## Features
 
@@ -127,15 +127,41 @@ Open **http://127.0.0.1:5173**. If this terminal is already at the repository ro
 3. Run segmentation and wait for the actual result.
 4. Explore **Segments** and **Insights**, then export the records or profiles you need.
 
-| Required column | Expected content |
-| --- | --- |
-| `CustomerID` | Customer identifier; keep leading zeros as text. Blank IDs are excluded during cleaning. |
-| `InvoiceNo` | Purchase invoice identifier. |
-| `InvoiceDate` | ISO date/time or a typed Excel date; supply an explicit format for non-ISO CSV dates. |
-| `Quantity` | Finite numeric quantity. |
-| `UnitPrice` | Finite numeric unit price. |
+### Preparing your data
 
-CSV must use UTF-8; XLSX reads the first worksheet. Other columns may be present. Invalid dates/numeric values, duplicate headers or missing required columns produce validation errors; transaction values are not imputed. The default upload limit is 64 MiB. K is bounded by usable customers and distinct feature vectors, and the API supports at most 10 candidate values per request.
+Upload **one CSV or Excel (.xlsx) file** where **each row is one product line of a sale**, the way most shop systems export orders. Your file **must** contain these five columns, spelled exactly like this (names are case-sensitive):
+
+| Column | What it holds | Example |
+| --- | --- | --- |
+| `CustomerID` | Who bought. Any text or number that identifies the customer. | `17850` |
+| `InvoiceNo` | The order/invoice number. Several rows can share one invoice. Invoices starting with `C` are treated as cancellations. | `536365` |
+| `InvoiceDate` | When the sale happened. | `2010-12-01 08:26:00` |
+| `Quantity` | How many units were bought on that line. | `6` |
+| `UnitPrice` | Price of one unit (any currency, no symbol). | `2.55` |
+
+A minimal valid CSV looks like this:
+
+```csv
+CustomerID,InvoiceNo,InvoiceDate,Quantity,UnitPrice
+17850,536365,2010-12-01 08:26:00,6,2.55
+17850,536365,2010-12-01 08:26:00,8,3.39
+13047,536367,2010-12-01 08:34:00,24,1.69
+13047,C536379,2010-12-01 09:41:00,-1,27.50
+```
+
+Good to know:
+
+- **Extra columns are fine.** Product name, country, stock code and so on are kept but not used for grouping.
+- **Dates:** use `YYYY-MM-DD` or `YYYY-MM-DD HH:MM:SS`, or real date cells in Excel. For CSV dates like `31/12/2024`, enter the date format (for example `%d/%m/%Y`) in **Optional date format** on the Analyze page.
+- **Rows that are skipped automatically**, not errors: empty `CustomerID`, cancellations (`InvoiceNo` starting with `C`), quantity or price of 0 or less, and exact duplicate rows.
+- **Rows that stop the analysis** with an error that names the row: a missing `InvoiceNo`, a date that can't be read, or text in `Quantity`/`UnitPrice`. Fix those rows and upload again.
+- **CSV files** must be saved as UTF-8 with commas between values. **Excel files** are read from the first sheet, with the column names in the first row.
+- **Leading zeros** in customer IDs (like `00123`) are kept only if the column is stored as text.
+- **Size:** up to 64 MiB per file, roughly 1.2 million CSV rows. You need at least as many distinct customers as the number of groups you ask for.
+
+The bundled `Online Retail.xlsx` already has this layout and is a good reference.
+
+Duplicate column names are rejected, and values are never guessed or filled in. K is bounded by usable customers and distinct feature vectors, and the API supports at most 10 candidate values per request.
 
 Results stay in memory while navigating and reset on a full refresh. Changing analysis settings clears the previous result. Cancelling the browser wait does not stop server computation.
 
